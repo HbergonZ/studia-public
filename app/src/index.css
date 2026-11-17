@@ -1,0 +1,281 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", "IBM Plex Sans", ui-sans-serif, sans-serif;
+
+  --color-navy-950: #0a0e1c;
+  --color-navy-900: #0f1428;
+  --color-navy-850: #131933;
+  --color-navy-800: #1a2140;
+  --color-navy-700: #262e52;
+
+  --color-brand-300: #b3a4fb;
+  --color-brand-400: #9c88f9;
+  --color-brand-500: #8067f5;
+  --color-brand-600: #6c4ce8;
+
+  --color-subject-1: #3987e5;
+  --color-subject-2: #d9772f;
+  --color-subject-3: #1fb787;
+  --color-subject-4: #d1972a;
+  --color-subject-5: #dd6aa0;
+  --color-subject-6: #4fb84f;
+
+  --color-chart-questoes: #22d3ee;
+  --color-chart-desempenho: #e879f9;
+}
+
+html {
+  color-scheme: dark;
+}
+
+.campo-tempo-pomodoro::-webkit-inner-spin-button,
+.campo-tempo-pomodoro::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.campo-tempo-pomodoro {
+  -moz-appearance: textfield;
+}
+
+.slider-dificuldade {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.slider-dificuldade::-webkit-slider-runnable-track {
+  height: 8px;
+  background: transparent;
+}
+
+.slider-dificuldade::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 18px;
+  width: 18px;
+  margin-top: -5px;
+  border-radius: 999px;
+  background: var(--color-brand-400);
+  border: 3px solid var(--color-navy-950);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: transform 120ms ease;
+}
+
+.slider-dificuldade::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.slider-dificuldade::-moz-range-track {
+  height: 8px;
+  background: transparent;
+  border: none;
+}
+
+.slider-dificuldade::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border-radius: 999px;
+  background: var(--color-brand-400);
+  border: 3px solid var(--color-navy-950);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+}
+
+.slider-dificuldade:disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.slider-dificuldade:disabled::-moz-range-thumb {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+body {
+  margin: 0;
+  background: var(--color-navy-950);
+  color: #f1f2f8;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-navy-700) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-navy-700);
+  border-radius: 999px;
+  border: 2px solid var(--color-navy-900);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-brand-600);
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.95) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes drawer-in {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes tooltip-in {
+  from { opacity: 0; transform: translateY(3px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes bichinho-respirar {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes bichinho-mastigar {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+@keyframes zzz-flutuar {
+  0% { opacity: 0; transform: translateY(6px) scale(0.7); }
+  20% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-22px) scale(1.15); }
+}
+
+@keyframes migalha-cair {
+  0% { opacity: 0; transform: translate(0, 0); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--migalha-x, 6px), 16px); }
+}
+
+@keyframes bichinho-balancar {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+
+@keyframes carta-flutuar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes lupa-descer {
+  0% { transform: translateY(-6px) rotate(-6deg); }
+  50% { transform: translateY(76px) rotate(4deg); }
+  100% { transform: translateY(-6px) rotate(-6deg); }
+}
+
+@keyframes brilho-descer {
+  0% { transform: translateY(-6px); opacity: 0.15; }
+  50% { transform: translateY(76px); opacity: 0.9; }
+  100% { transform: translateY(-6px); opacity: 0.15; }
+}
+
+@keyframes linha-revelar {
+  0%, 100% { background: rgba(255, 255, 255, 0.1); }
+  50% { background: var(--linha-cor, var(--color-brand-400)); }
+}
+
+@keyframes pontos-loop {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+.animate-overlay {
+  animation: overlay-in 150ms ease-out;
+}
+
+.animate-modal {
+  animation: modal-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-drawer {
+  animation: drawer-in 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-tooltip {
+  animation: tooltip-in 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-bichinho-respirar {
+  animation: bichinho-respirar 3.2s ease-in-out infinite;
+}
+
+.animate-bichinho-mastigar {
+  animation: bichinho-mastigar 0.6s ease-in-out infinite;
+}
+
+.animate-zzz {
+  animation: zzz-flutuar 2.4s ease-in-out infinite;
+}
+
+.animate-migalha {
+  animation: migalha-cair 1.1s ease-in-out infinite;
+}
+
+.animate-bichinho-balancar {
+  animation: bichinho-balancar 1.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 90%;
+}
+
+.animate-carta-flutuar {
+  animation: carta-flutuar 1.2s ease-in-out infinite;
+}
+
+.animate-lupa-descer {
+  animation: lupa-descer 2.4s ease-in-out infinite;
+  transform-origin: 30% 20%;
+}
+
+.animate-brilho-descer {
+  animation: brilho-descer 2.4s ease-in-out infinite;
+}
+
+.animate-linha-revelar {
+  animation: linha-revelar 2.4s ease-in-out infinite;
+}
+
+.animate-pontos-loop {
+  animation: pontos-loop 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-overlay,
+  .animate-modal,
+  .animate-drawer,
+  .animate-tooltip,
+  .animate-bichinho-respirar,
+  .animate-bichinho-mastigar,
+  .animate-bichinho-balancar,
+  .animate-carta-flutuar,
+  .animate-lupa-descer,
+  .animate-brilho-descer,
+  .animate-linha-revelar,
+  .animate-pontos-loop,
+  .animate-zzz,
+  .animate-migalha {
+    animation: none;
+  }
+}

@@ -1,0 +1,21 @@
+.env
+.idea/
+.vscode/
+*.log
+
+# Dependências e artefatos do frontend
+app/node_modules/
+app/dist/
+
+# Dependências e arquivos gerados pelo CodeIgniter
+server/vendor/
+server/writable/cache/*
+server/writable/debugbar/*
+server/writable/logs/*
+server/writable/session/*
+server/writable/uploads/*
+!server/writable/**/.gitkeep
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

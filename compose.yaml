@@ -1,0 +1,75 @@
+name: studia
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    ports:
+      - "${APP_PORT:-8088}:80"
+    volumes:
+      - ./server:/var/www/server:ro
+    depends_on:
+      php:
+        condition: service_healthy
+    restart: unless-stopped
+
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    working_dir: /var/www/server
+    environment:
+      CI_ENVIRONMENT: ${CI_ENVIRONMENT:-development}
+      app.baseURL: ${APP_BASE_URL:-http://localhost:8088}
+      encryption.key: ${APP_ENCRYPTION_KEY:-}
+      database.default.hostname: postgres
+      database.default.database: ${POSTGRES_DB:-studia}
+      database.default.username: ${POSTGRES_USER:-studia}
+      database.default.password: ${POSTGRES_PASSWORD:-studia_local}
+      database.default.DBDriver: Postgre
+      database.default.port: 5432
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      GEMINI_API: ${GEMINI_API:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.6-flash}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-dots-studio/dots-3-note-preview:free}
+      OPENROUTER_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1/chat/completions}
+      OPENROUTER_TIMEOUT_SECONDS: ${OPENROUTER_TIMEOUT_SECONDS:-600}
+      OPENROUTER_TOTAL_TIMEOUT_SECONDS: ${OPENROUTER_TOTAL_TIMEOUT_SECONDS:-300}
+      OPENROUTER_ATTEMPT_TIMEOUT_SECONDS: ${OPENROUTER_ATTEMPT_TIMEOUT_SECONDS:-90}
+      OPENROUTER_MAX_ATTEMPTS: ${OPENROUTER_MAX_ATTEMPTS:-4}
+      OPENROUTER_FALLBACK_MODELS: ${OPENROUTER_FALLBACK_MODELS:-}
+      OPENROUTER_MAX_TOKENS: ${OPENROUTER_MAX_TOKENS:-50000}
+    volumes:
+      - ./server:/var/www/server
+      - server_vendor:/var/www/server/vendor
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000 | grep -q pong"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-studia}
+      POSTGRES_USER: ${POSTGRES_USER:-studia}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-studia_local}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  server_vendor:

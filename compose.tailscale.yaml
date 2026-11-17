@@ -1,0 +1,15 @@
+services:
+  tailscale:
+    image: tailscale/tailscale:v1.104.1
+    entrypoint: ["tailscaled"]
+    command: ["--tun=userspace-networking", "--statedir=/var/lib/tailscale"]
+    network_mode: service:web
+    volumes:
+      - tailscale_state:/var/lib/tailscale
+    depends_on:
+      web:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  tailscale_state:

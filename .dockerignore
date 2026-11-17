@@ -1,0 +1,14 @@
+.git
+.env
+.agents
+.claude
+app/node_modules
+app/dist
+server/vendor
+server/writable/cache
+server/writable/debugbar
+server/writable/logs
+server/writable/session
+server/writable/uploads
+*.pdf
+*.zip
