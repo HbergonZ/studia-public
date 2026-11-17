@@ -26,27 +26,27 @@ export default function CronogramaSecao() {
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-navy-900 p-4">
+    <div className="review-kanban">
       <div className="mb-4">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+        <h2 className="flex items-center gap-2 text-base font-semibold text-ink">
           <IconClipboardList className="h-4 w-4" />
-          Cronograma completo
+          Quadro de revisões
         </h2>
-        <p className="text-sm text-slate-400">
-          Prioridade do dia: revisões atrasadas primeiro, depois as de hoje, depois conteúdo novo.
+        <p className="text-sm text-muted">
+          Este quadro mostra todo o conteúdo. O plano escolhe o que cabe no dia, equilibrando até duas revisões para um conteúdo novo quando ambos estão disponíveis.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4 xl:items-start">
+      <div className="review-kanban-columns">
         {grupos.map((grupo) => {
           const itens = porStatus(grupo.status)
           return (
-            <section key={grupo.status}>
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
-                {grupo.titulo} ({itens.length})
+            <section key={grupo.status} className={`review-kanban-column status-${grupo.status}`}>
+              <h3 className="review-kanban-heading">
+                {grupo.titulo}<span>{itens.length}</span>
               </h3>
               {itens.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-white/10 p-3 text-sm text-slate-500">
+                <p className="rounded-md border border-dashed border-line p-3 text-sm text-muted">
                   Nada por aqui.
                 </p>
               ) : (
@@ -56,24 +56,24 @@ export default function CronogramaSecao() {
                   return (
                     <li
                       key={item.topico.id}
-                      className={`flex shrink-0 flex-col gap-2 rounded-xl border-l-4 bg-navy-850 p-3 ${estilo.border}`}
+                      className={`review-kanban-card ${estilo.border}`}
                     >
                       <div className="flex flex-wrap items-center gap-2">
                         <StatusBadge status={item.status} />
-                        <span className="text-xs text-slate-500">{formatarData(item.dataPrevista)}</span>
+                        <span className="text-xs text-muted">{item.status === 'novo' ? (item.topico.emAndamento ? 'Em andamento' : 'Ainda não iniciado') : formatarData(item.dataPrevista)}</span>
                       </div>
                       <div className="flex flex-col gap-2">
                         <div className="min-w-0">
                           <p className={`text-xs font-medium ${estilo.text}`}>
                             {item.materiaNome} · peso {item.peso}
                           </p>
-                          <p className="font-medium text-slate-100">{item.topico.nome}</p>
+                          <p className="font-medium text-ink">{item.topico.nome}</p>
                         </div>
                         {item.status !== 'futura' && (
                           <button
                             type="button"
                             onClick={() => setItemSessao(item)}
-                            className="self-start whitespace-nowrap rounded-lg bg-brand-600 px-3 py-1 text-xs font-medium text-white transition-all duration-150 hover:scale-[1.04] hover:bg-brand-500 active:scale-95"
+                            className="self-start whitespace-nowrap rounded-lg bg-brand-600 px-3 py-1 text-xs font-medium text-on-brand transition-all duration-150 hover:scale-[1.04] hover:bg-brand-500 active:scale-95"
                           >
                             Registrar sessão
                           </button>
@@ -96,6 +96,7 @@ export default function CronogramaSecao() {
           topicoId={itemSessao.topico.id}
           topicoNome={itemSessao.topico.nome}
           dificuldadeAtual={itemSessao.topico.dificuldade}
+          concluirInicial={itemSessao.status !== 'novo' && !itemSessao.topico.emAndamento}
           onFechar={() => setItemSessao(null)}
         />
       )}

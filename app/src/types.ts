@@ -1,10 +1,14 @@
 export interface Topico {
   id: string
   nome: string
+  textoOriginal?: string | null
+  origemId?: string | null
   dificuldade: number
   posicaoCurva: number
   primeiraRevisao?: string
   ultimaRevisao?: string
+  proximaRevisao?: string | null
+  emAndamento?: boolean
   questoes: {
     acertos: number
     erros: number
@@ -19,9 +23,12 @@ export interface Materia {
   nome: string
   grupoNome: string
   opcaoIds: string[]
+  aplicaATodos: boolean
   tipoConhecimento: 'general' | 'specific'
   selecionada: boolean
   peso: number
+  pesoPadrao?: number
+  pesoPersonalizado?: boolean
   cor: CorMateria
   topicos: Topico[]
 }
@@ -72,6 +79,23 @@ export interface Sessao {
   acertos: number
   erros: number
   dificuldade: number
+  concluiuAssunto?: boolean
+  corrigida?: boolean
+}
+
+export interface TopicoPlano {
+  id: string; subjectId: string; title: string; subjectName: string; weight: number; color: CorMateria
+  difficulty: number; nextReviewAt: string | null; continuation: boolean
+  sourceText?: string | null; isSource?: boolean
+}
+export interface BlocoPlano {
+  id: string; topicId: string; minutes: number; status: 'planned' | 'completed' | 'deferred'; reason: string
+  topic: TopicoPlano | null; actualMinutes?: number; sessionId?: string
+}
+export interface PlanoDia {
+  id: string | null; noticeId: string; date: string; today: string; version: number
+  capacityMinutes: number; spentMinutes: number; blockMinutes: number; breakMinutes: number
+  blocks: BlocoPlano[]; topics: TopicoPlano[]
 }
 
 export interface Metas {

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Três propostas de layout para o Studia, com dados fictícios e navegação de demonstração.">
+  <title>Studia | Estudo de layouts</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Pular para o conteúdo</a>
+  <header class="review-bar" aria-label="Opções do protótipo">
+    <div class="review-title"><strong>Studia</strong><span>Estudo de layouts</span></div>
+    <div class="layout-options" role="group" aria-label="Escolher layout">
+      <button data-layout="biblioteca" aria-pressed="true">Biblioteca</button>
+      <button data-layout="agenda" aria-pressed="false">Agenda</button>
+      <button data-layout="mesa" aria-pressed="false">Mesa de estudo</button>
+    </div>
+    <div class="review-tools"><span class="demo-tag">Dados fictícios</span><button class="review-about" id="about-button">Sobre as opções</button></div>
+  </header>
+  <div id="app" data-theme="biblioteca"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <dialog id="dialog"><div id="dialog-content"></div></dialog>
+  <script src="app.js" defer></script>
+</body>
+</html>

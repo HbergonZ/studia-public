@@ -5,14 +5,15 @@ interface SliderDificuldadeProps {
   onChange: (valor: number) => void
   disabled?: boolean
   rotulo?: string
+  maximo?: number
 }
 
-export default function SliderDificuldade({ valor, onChange, disabled, rotulo = 'Dificuldade' }: SliderDificuldadeProps) {
-  const percentual = (valor / 10) * 100
+export default function SliderDificuldade({ valor, onChange, disabled, rotulo = 'Dificuldade', maximo = 10 }: SliderDificuldadeProps) {
+  const percentual = (Math.min(maximo, valor) / maximo) * 100
 
   return (
     <div>
-      <div className="relative h-2 w-full rounded-full bg-navy-700">
+      <div className="relative h-2 w-full rounded-full bg-line-strong">
         <div
           className="absolute inset-y-0 left-0 rounded-full bg-brand-500 transition-[width] duration-150"
           style={{ width: `${percentual}%` }}
@@ -20,7 +21,7 @@ export default function SliderDificuldade({ valor, onChange, disabled, rotulo = 
         <input
           type="range"
           min={0}
-          max={10}
+          max={maximo}
           step={1}
           value={valor}
           disabled={disabled}
@@ -29,9 +30,9 @@ export default function SliderDificuldade({ valor, onChange, disabled, rotulo = 
           className="slider-dificuldade absolute inset-0 h-2 w-full cursor-pointer appearance-none bg-transparent disabled:cursor-not-allowed"
         />
       </div>
-      <div className="mt-2 flex justify-between text-[10px] text-slate-500">
+      <div className="mt-2 flex justify-between text-xs text-muted">
         {MARCADORES.map((n) => (
-          <span key={n}>{n}</span>
+          <span key={n}>{Math.round(n * maximo / 10)}</span>
         ))}
       </div>
     </div>

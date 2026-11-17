@@ -15,13 +15,13 @@ final class AiEditalExtractor
     {
         $this->config = Closure::fromCallable($config ?? static fn($name, $default) => env($name, $default));
         $this->clock = Closure::fromCallable($clock ?? static fn(): float => hrtime(true) / 1e9);
-        $this->gemini = Closure::fromCallable($gemini ?? fn($text, $deadline, $timeout) =>
-            (new GeminiEditalExtractor(clock: $this->clock, config: $this->config))->extract($text, $deadline, $timeout));
-        $this->openRouter = Closure::fromCallable($openRouter ?? fn($text, $deadline, $remaining) =>
-            (new OpenRouterEditalExtractor(clock: $this->clock, config: $this->config))->extract($text, $deadline, $remaining));
+        $this->gemini = Closure::fromCallable($gemini ?? fn($text, $deadline, $timeout, $task = null) =>
+            (new GeminiEditalExtractor(clock: $this->clock, config: $this->config))->extract($text, $deadline, $timeout, $task));
+        $this->openRouter = Closure::fromCallable($openRouter ?? fn($text, $deadline, $remaining, $task = null) =>
+            (new OpenRouterEditalExtractor(clock: $this->clock, config: $this->config))->extract($text, $deadline, $remaining, $task));
     }
 
-    public function extract(string $text): array
+    public function extract(string $text, ?array $task = null): array
     {
         // Validate document limits before contacting either provider.
         (new EditalPromptBuilder())->build($text);
@@ -33,7 +33,7 @@ final class AiEditalExtractor
         $lastError = null;
         if (trim((string) ($this->config)('GEMINI_API', '')) !== '') {
             try {
-                return ($this->gemini)($text, $deadline, $timeout);
+                return ($this->gemini)($text, $deadline, $timeout, $task);
             } catch (OpenRouterExtractionException $error) {
                 $attempts = $error->getAttempts();
                 $lastError = $error->getMessage();
@@ -44,7 +44,7 @@ final class AiEditalExtractor
         }
         if (count($attempts) < $maxAttempts && trim((string) ($this->config)('OPENROUTER_API_KEY', '')) !== '') {
             try {
-                $result = ($this->openRouter)($text, $deadline, $maxAttempts - count($attempts));
+                $result = ($this->openRouter)($text, $deadline, $maxAttempts - count($attempts), $task);
                 $result['attempts'] = array_merge($attempts, $result['attempts']);
                 return $result;
             } catch (OpenRouterExtractionException $error) {

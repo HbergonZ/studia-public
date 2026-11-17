@@ -1,4 +1,5 @@
 import type { Topico } from '../types'
+import { lerData } from './datas'
 
 // Sequência de revisão baseada na curva de Ebbinghaus (regra definida em docs/planejamento.md)
 export const INTERVALOS_DIAS = [1, 7, 16, 35, 90]
@@ -40,14 +41,8 @@ export function proximaPosicao(topico: Topico): number {
 }
 
 export function proximaRevisao(topico: Topico): Date | null {
-  if (!topico.ultimaRevisao) return null
-  const posicao = proximaPosicao(topico)
-  const dias = intervaloPorPosicao(posicao)
-  const base = new Date(topico.ultimaRevisao)
-  const data = new Date(base)
-  data.setDate(data.getDate() + dias)
-  data.setHours(0, 0, 0, 0)
-  return data
+  if (!topico.proximaRevisao) return null
+  return inicioDoDia(lerData(topico.proximaRevisao))
 }
 
 export function inicioDoDia(data: Date): Date {

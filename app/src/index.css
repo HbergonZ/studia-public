@@ -1,34 +1,51 @@
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
 @import "tailwindcss";
+@import "./styles/mesa.css";
+@import "./styles/agenda.css";
 
 @theme {
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Bricolage Grotesque", "IBM Plex Sans", ui-sans-serif, sans-serif;
+  --font-sans: "Public Sans", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Public Sans", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
 
-  --color-navy-950: #0a0e1c;
-  --color-navy-900: #0f1428;
-  --color-navy-850: #131933;
-  --color-navy-800: #1a2140;
-  --color-navy-700: #262e52;
+  --text-xs: 0.875rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 1rem;
+  --text-sm--line-height: 1.6;
+  --text-base: 1rem;
+  --text-base--line-height: 1.65;
 
-  --color-brand-300: #b3a4fb;
-  --color-brand-400: #9c88f9;
-  --color-brand-500: #8067f5;
-  --color-brand-600: #6c4ce8;
+  --color-canvas: #f6f5ef;
+  --color-surface: #ffffff;
+  --color-soft: #f1eee1;
+  --color-hover: #ede8d5;
+  --color-line: #d9d5c3;
+  --color-line-strong: #bcb69c;
+  --color-ink: #303127;
+  --color-muted: #666452;
+  --color-on-brand: #ffffff;
+  --color-focus-950: #1c2c3e;
+  --color-focus-900: #243549;
+  --color-focus-850: #2b3f55;
+  --color-focus-800: #354b63;
+  --color-focus-700: #496179;
 
-  --color-subject-1: #3987e5;
-  --color-subject-2: #d9772f;
-  --color-subject-3: #1fb787;
-  --color-subject-4: #d1972a;
-  --color-subject-5: #dd6aa0;
-  --color-subject-6: #4fb84f;
+  --color-brand-300: #e6d396;
+  --color-brand-400: #a58a36;
+  --color-brand-500: #776125;
+  --color-brand-600: #635018;
 
-  --color-chart-questoes: #22d3ee;
-  --color-chart-desempenho: #e879f9;
+  --color-subject-1: #477899;
+  --color-subject-2: #927044;
+  --color-subject-3: #477a68;
+  --color-subject-4: #8c743c;
+  --color-subject-5: #86648a;
+  --color-subject-6: #617b57;
+
+  --color-chart-questoes: #635018;
+  --color-chart-desempenho: #ad854a;
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 .campo-tempo-pomodoro::-webkit-inner-spin-button,
@@ -58,7 +75,7 @@ html {
   margin-top: -5px;
   border-radius: 999px;
   background: var(--color-brand-400);
-  border: 3px solid var(--color-navy-950);
+  border: 3px solid var(--color-surface);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
   cursor: pointer;
   transition: transform 120ms ease;
@@ -79,7 +96,7 @@ html {
   width: 18px;
   border-radius: 999px;
   background: var(--color-brand-400);
-  border: 3px solid var(--color-navy-950);
+  border: 3px solid var(--color-surface);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
   cursor: pointer;
 }
@@ -96,15 +113,17 @@ html {
 
 body {
   margin: 0;
-  background: var(--color-navy-950);
-  color: #f1f2f8;
+  background: var(--color-canvas);
+  color: var(--color-ink);
   font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-navy-700) transparent;
+  scrollbar-color: var(--color-line-strong) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -117,9 +136,9 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: var(--color-navy-700);
+  background-color: var(--color-line-strong);
   border-radius: 999px;
-  border: 2px solid var(--color-navy-900);
+  border: 2px solid var(--color-surface);
 }
 
 *::-webkit-scrollbar-thumb:hover {

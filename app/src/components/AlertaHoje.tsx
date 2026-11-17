@@ -23,8 +23,7 @@ const HORAS_POR_TOPICO = 1
 
 function formatarEyebrow(data: Date) {
   const texto = data.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })
-  const [diaSemana, resto] = texto.split(', ')
-  return `${diaSemana} · ${resto}`.toUpperCase()
+  return texto.charAt(0).toUpperCase() + texto.slice(1)
 }
 
 export default function AlertaHoje() {
@@ -62,18 +61,18 @@ export default function AlertaHoje() {
           onClick={() => irParaDia(-1)}
           disabled={ehHoje}
           aria-label="Dia anterior"
-          className="rounded-lg px-1.5 py-0.5 text-slate-500 transition-colors hover:bg-navy-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+          className="rounded-lg px-1.5 py-0.5 text-muted transition-colors hover:bg-hover hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
         >
           ‹
         </button>
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+        <p className="text-xs font-medium text-muted">
           {formatarEyebrow(diaSelecionado)}
         </p>
         <button
           type="button"
           onClick={() => irParaDia(1)}
           aria-label="Próximo dia"
-          className="rounded-lg px-1.5 py-0.5 text-slate-500 transition-colors hover:bg-navy-800 hover:text-white"
+          className="rounded-lg px-1.5 py-0.5 text-muted transition-colors hover:bg-hover hover:text-ink"
         >
           ›
         </button>
@@ -81,17 +80,17 @@ export default function AlertaHoje() {
           <button
             type="button"
             onClick={() => setDiaSelecionado(hoje)}
-            className="text-xs text-brand-400 underline underline-offset-2 transition-colors hover:text-brand-300"
+            className="text-xs text-brand-600 underline underline-offset-2 transition-colors hover:text-brand-600"
           >
             voltar para hoje
           </button>
         )}
       </div>
-      <h2 className="font-display mt-1 text-2xl font-semibold text-white">
+      <h2 className="font-display mt-1 text-2xl font-semibold text-ink">
         {ehHoje ? 'O que estudar hoje' : 'O que estudar nesse dia'}
       </h2>
-      <p className="mt-1 text-sm text-slate-400">
-        {horasDisponiveis}h disponíveis — dá para cerca de {cabemNoDia} {cabemNoDia === 1 ? 'tópico' : 'tópicos'}.
+      <p className="mt-1 text-sm text-muted">
+        {horasDisponiveis}h disponíveis. Tempo para cerca de {cabemNoDia} {cabemNoDia === 1 ? 'tópico' : 'tópicos'}.
       </p>
     </div>
   )
@@ -100,60 +99,60 @@ export default function AlertaHoje() {
 
   if (doDia.length === 0 && finalizadosHoje.length === 0) {
     return (
-      <div className="h-full rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-5">
+      <div className="h-full rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-5">
         {cabecalho}
-        <p className="font-medium text-emerald-300">Nada pendente {ehHoje ? 'para hoje' : 'para esse dia'} 🎉</p>
-        <p className="text-sm text-emerald-400/80">Tudo em dia com o cronograma.</p>
+        <p className="font-medium text-emerald-700">Nada pendente {ehHoje ? 'para hoje' : 'para esse dia'} 🎉</p>
+        <p className="text-sm text-emerald-700/80">Tudo em dia com o cronograma.</p>
       </div>
     )
   }
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-brand-500/20 bg-navy-900 p-5 lg:h-[584px]">
+    <div className="flex h-full flex-col overflow-hidden rounded-lg border border-brand-500/20 bg-surface p-5 lg:h-[584px]">
       {cabecalho}
 
       <ul className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
         {doDia.map((item, index) => (
           <li
             key={item.topico.id}
-            className={`flex flex-col gap-2 rounded-xl border-l-[3px] bg-navy-850 p-3 sm:flex-row sm:items-center sm:justify-between ${SUBJECT_STYLES[item.cor].border}`}
+            className={`flex flex-col gap-2 rounded-md border-l-[3px] bg-soft p-3 sm:flex-row sm:items-center sm:justify-between ${SUBJECT_STYLES[item.cor].border}`}
           >
             <div className="min-w-0 flex-1">
               <div className="mb-1 flex flex-wrap items-center gap-2">
                 <StatusBadge status={item.status} />
                 {index >= cabemNoDia && (
                   <Tooltip texto="Fora do tempo disponível hoje. Se não for estudado, passa para o dia seguinte.">
-                    <IconClock className="h-4 w-4 text-amber-400" />
+                    <IconClock className="h-4 w-4 text-amber-700" />
                   </Tooltip>
                 )}
               </div>
               <p className={`text-xs font-medium ${SUBJECT_STYLES[item.cor].text}`}>{item.materiaNome}</p>
-              <p className="font-medium text-slate-100">{item.topico.nome}</p>
+              <p className="font-medium text-ink">{item.topico.nome}</p>
             </div>
             {ehHoje ? (
               <button
                 type="button"
                 onClick={() => setItemSessao(item)}
                 aria-label={`Registrar sessão de ${item.topico.nome}`}
-                className="flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-full bg-brand-600 text-white transition-all duration-150 hover:scale-110 hover:bg-brand-500 active:scale-95 sm:self-auto"
+                className="flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-full bg-brand-600 text-on-brand transition-all duration-150 hover:scale-110 hover:bg-brand-500 active:scale-95 sm:self-auto"
               >
                 <IconPlay className="ml-0.5 h-4 w-4" />
               </button>
             ) : (
-              <span className="shrink-0 text-xs text-slate-500">prévia · registro só vale para hoje</span>
+              <span className="shrink-0 text-xs text-muted">prévia · registro só vale para hoje</span>
             )}
           </li>
         ))}
         {finalizadosHoje.map((item) => (
           <li
             key={item.topico.id}
-            className={`flex flex-col gap-2 rounded-xl border-l-[3px] bg-navy-850 p-3 opacity-60 sm:flex-row sm:items-center sm:justify-between ${SUBJECT_STYLES[item.cor].border}`}
+            className={`flex flex-col gap-2 rounded-md border-l-[3px] bg-soft p-3 opacity-60 sm:flex-row sm:items-center sm:justify-between ${SUBJECT_STYLES[item.cor].border}`}
           >
             <div className="min-w-0 flex-1">
               <p className={`text-xs font-medium ${SUBJECT_STYLES[item.cor].text}`}>{item.materiaNome}</p>
-              <p className="font-medium text-slate-100 line-through decoration-slate-500">{item.topico.nome}</p>
+              <p className="font-medium text-ink line-through decoration-slate-500">{item.topico.nome}</p>
             </div>
-            <span className="shrink-0 self-start whitespace-nowrap rounded-full bg-emerald-500/15 px-3.5 py-1.5 text-xs font-medium text-emerald-400 sm:self-auto">
+            <span className="shrink-0 self-start whitespace-nowrap rounded-full bg-emerald-500/15 px-3.5 py-1.5 text-xs font-medium text-emerald-700 sm:self-auto">
               ✓ Finalizado
             </span>
           </li>

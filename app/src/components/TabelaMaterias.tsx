@@ -28,15 +28,15 @@ export default function TabelaMaterias() {
   }, [materias, sessoes])
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-navy-900 p-4">
-      <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+    <div className="rounded-lg border border-line bg-surface p-4">
+      <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-muted">
         <IconTable className="h-4 w-4" />
         Matérias
       </h2>
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="text-xs uppercase tracking-wide text-slate-500">
+            <tr className="text-xs text-muted">
               <th className="pb-2 pr-3 font-medium">Matéria</th>
               <th className="pb-2 pr-3 text-center font-medium">Tempo total</th>
               <th className="pb-2 pr-3 text-center font-medium">Questões</th>
@@ -47,16 +47,16 @@ export default function TabelaMaterias() {
             {linhas.map(({ materia, tempoTotal, questoesTotal, pctAcerto }) => {
               const estilo = SUBJECT_STYLES[materia.cor]
               return (
-                <tr key={materia.id} className="border-t border-white/5">
+                <tr key={materia.id} className="border-t border-line">
                   <td className="py-2 pr-3">
                     <span className={`inline-block h-2 w-2 rounded-full ${estilo.dot}`} /> {' '}
-                    <span className="text-slate-200">{materia.nome}</span>
+                    <span className="text-ink">{materia.nome}</span>
                   </td>
-                  <td className="py-2 pr-3 whitespace-nowrap text-center text-slate-300">
+                  <td className="py-2 pr-3 whitespace-nowrap text-center text-ink">
                     {formatarTempo(tempoTotal)}
                   </td>
-                  <td className="py-2 pr-3 whitespace-nowrap text-center text-slate-300">{questoesTotal}</td>
-                  <td className="py-2 text-center text-slate-300">
+                  <td className="py-2 pr-3 whitespace-nowrap text-center text-ink">{questoesTotal}</td>
+                  <td className="py-2 text-center text-ink">
                     {questoesTotal > 0 ? (
                       <div className="flex justify-center">
                         <AnelPercentual valor={pctAcerto} cor={corDesempenho(pctAcerto)} />

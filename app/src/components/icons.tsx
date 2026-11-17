@@ -1,5 +1,13 @@
 type IconProps = { className?: string }
 
+export function IconUsers({ className }: IconProps) {
+  return <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+    <circle cx="9" cy="7.5" r="3" />
+    <circle cx="17.5" cy="8.5" r="2.5" />
+    <path d="M2 19a7 7 0 0 1 14 0v1H2v-1ZM17.5 13a5 5 0 0 1 5 5v2h-5v-1a8.5 8.5 0 0 0-2.12-5.62A4.97 4.97 0 0 1 17.5 13Z" />
+  </svg>
+}
+
 export function IconEye({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className}>

@@ -1,105 +1,59 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { IconFile } from '../components/icons'
+import { useCallback, useEffect, useState } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import Modal from '../components/Modal'
+import PreviaUnidades from '../components/PreviaUnidades'
+import type { PreviaImportacao } from '../lib/studyUnits'
+import { api } from '../lib/api'
 import { useEstudo } from '../context/EstudoContext'
 import { EDITAL_ANALYSIS_PROMPT } from '../lib/editalPrompt'
 
 function TelaLendoEdital() {
-  return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-7 bg-navy-950">
-      <div className="relative h-[210px] w-[208px]">
-        <div className="absolute left-0 top-3.5 flex h-[168px] w-[132px] flex-col gap-2.5 overflow-hidden rounded-[14px] border border-white/10 bg-navy-850 p-4 shadow-[0_20px_50px_rgba(108,76,232,0.18)]">
-          <div
-            className="animate-linha-revelar h-1.5 w-[70%] rounded bg-white/10"
-            style={{ animationDelay: '0s', ['--linha-cor' as string]: 'var(--color-brand-400)' }}
-          />
-          <div
-            className="animate-linha-revelar h-1.5 w-[90%] rounded bg-white/10"
-            style={{ animationDelay: '0.3s', ['--linha-cor' as string]: 'var(--color-brand-400)' }}
-          />
-          <div
-            className="animate-linha-revelar h-1.5 w-[55%] rounded bg-white/10"
-            style={{ animationDelay: '0.6s', ['--linha-cor' as string]: 'var(--color-chart-questoes)' }}
-          />
-          <div className="h-1.5" />
-          <div
-            className="animate-linha-revelar h-1.5 w-[85%] rounded bg-white/10"
-            style={{ animationDelay: '0.9s', ['--linha-cor' as string]: 'var(--color-chart-questoes)' }}
-          />
-          <div
-            className="animate-linha-revelar h-1.5 w-[65%] rounded bg-white/10"
-            style={{ animationDelay: '1.2s', ['--linha-cor' as string]: 'var(--color-chart-desempenho)' }}
-          />
-          <div className="h-1.5" />
-          <div
-            className="animate-linha-revelar h-1.5 w-[75%] rounded bg-white/10"
-            style={{ animationDelay: '1.5s', ['--linha-cor' as string]: 'var(--color-chart-desempenho)' }}
-          />
-          <div
-            className="animate-linha-revelar h-1.5 w-[45%] rounded bg-white/10"
-            style={{ animationDelay: '1.8s', ['--linha-cor' as string]: '#34d399' }}
-          />
-
-          <div
-            className="animate-brilho-descer absolute left-2 right-2 top-3.5 h-[3px] rounded-full"
-            style={{
-              background: 'linear-gradient(90deg, transparent, var(--color-brand-400), transparent)',
-              boxShadow: '0 0 14px 2px rgba(156,136,249,0.7)',
-            }}
-          />
-        </div>
-
-        <svg width="150" height="140" viewBox="0 0 150 140" className="absolute right-2 top-2.5 z-10">
-          <g className="animate-bichinho-balancar">
-            <ellipse cx="90" cy="86" rx="34" ry="27" fill="var(--color-brand-500)" />
-            <circle cx="65" cy="59" r="10" fill="var(--color-brand-500)" />
-            <circle cx="115" cy="59" r="10" fill="var(--color-brand-500)" />
-            <circle cx="65" cy="59" r="5" fill="var(--color-brand-600)" />
-            <circle cx="115" cy="59" r="5" fill="var(--color-brand-600)" />
-            <circle cx="73" cy="92" r="4.5" fill="var(--color-brand-300)" opacity="0.5" />
-            <circle cx="107" cy="92" r="4.5" fill="var(--color-brand-300)" opacity="0.5" />
-            <rect x="65" y="76" width="50" height="16" rx="2.5" fill="#0f1428" stroke="var(--color-brand-300)" strokeWidth="1.5" />
-            <line x1="90" y1="76" x2="90" y2="92" stroke="var(--color-brand-300)" strokeWidth="1.2" />
-            <path d="M79 82 q4 -3 8 0" stroke="#0f1428" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-            <path d="M96 82 q4 -3 8 0" stroke="#0f1428" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-            <path d="M83 98 q7 4 14 0" stroke="#0f1428" strokeWidth="2" fill="none" strokeLinecap="round" />
-            <ellipse cx="42" cy="88" rx="11" ry="9" fill="var(--color-brand-500)" />
-          </g>
-        </svg>
-
-        <div className="animate-lupa-descer absolute left-[96px] top-0.5 h-[42px] w-[42px]">
-          <svg width="42" height="42" viewBox="0 0 46 46" fill="none">
-            <circle cx="19" cy="19" r="13" fill="rgba(19,25,51,0.6)" stroke="var(--color-brand-400)" strokeWidth="3" />
-            <line x1="28.5" y1="28.5" x2="40" y2="40" stroke="var(--color-brand-400)" strokeWidth="4" strokeLinecap="round" />
-          </svg>
-        </div>
-      </div>
-
-      <div className="text-center">
-        <p className="font-display text-xl font-semibold text-white">Lendo seu edital…</p>
-        <p className="mt-1 max-w-[320px] text-sm text-slate-400">Separando as matérias e os tópicos pra você.</p>
-        <p className="mt-3 max-w-[320px] text-xs text-slate-500">A análise pode levar alguns minutos. Tentaremos outra IA gratuita se a resposta não passar pela validação.</p>
-      </div>
-
-      <div className="flex items-center gap-1.5">
-        <span className="animate-pontos-loop h-1.5 w-1.5 rounded-full bg-brand-400" style={{ animationDelay: '0s' }} />
-        <span className="animate-pontos-loop h-1.5 w-1.5 rounded-full bg-brand-400" style={{ animationDelay: '0.2s' }} />
-        <span className="animate-pontos-loop h-1.5 w-1.5 rounded-full bg-brand-400" style={{ animationDelay: '0.4s' }} />
-      </div>
-    </div>
-  )
+  return <section role="status" aria-live="polite" className="daily-empty"><IconFile className="mx-auto h-10 w-10 text-brand-600" /><h1>Lendo seu edital</h1><p>A análise pode levar alguns minutos. Se a conexão for interrompida, você poderá retomar o mesmo edital pela lista de editais.</p><p>O progresso fica salvo para você retomar depois.</p></section>
 }
 
 export default function UploadEdital() {
-  const { iniciarProcessamento, importarRespostaIa, iniciarCadastroManual } = useEstudo()
+  const { usuario } = useAuth()
+  const chaveImportacao = `studia:importacao:${usuario?.id}`
+  const chaveResposta = `studia:resposta-ia:${usuario?.id}`
+  const [retomarId, setRetomarId] = useState<string | undefined>(() => {
+    const params = new URLSearchParams(location.search); if (params.get('manual') === '1') return undefined
+    const id = params.get('retomar')
+    try { const saved = id ?? sessionStorage.getItem(chaveImportacao); return saved && /^\d+$/.test(saved) ? saved : undefined } catch { return id && /^\d+$/.test(id) ? id : undefined }
+  })
+  const limparRascunho = useCallback(() => { try { sessionStorage.removeItem(chaveImportacao); sessionStorage.removeItem(chaveResposta); sessionStorage.removeItem(`studia:importKey:${usuario?.id}`) } catch { /* Storage may be unavailable. */ } }, [chaveImportacao, chaveResposta, usuario?.id])
+  const guardarRetomada = () => { try { setRetomarId(sessionStorage.getItem(chaveImportacao) ?? undefined) } catch { /* The list still exposes the draft. */ } }
+  const { importarRespostaIa } = useEstudo()
   const [nome, setNome] = useState('')
   const [erro, setErro] = useState('')
   const [processando, setProcessando] = useState(false)
   const navigate = useNavigate()
   const [mostrarImportacao, setMostrarImportacao] = useState(false)
-  const [respostaIa, setRespostaIa] = useState('')
+  const [respostaIa, setRespostaIa] = useState(() => { try { return sessionStorage.getItem(chaveResposta) ?? '' } catch { return '' } })
+  const [previa, setPrevia] = useState<PreviaImportacao | null>(null)
   const [importando, setImportando] = useState(false)
   const [statusCopia, setStatusCopia] = useState<'idle' | 'copiado' | 'erro'>('idle')
+
+  useEffect(() => {
+    if (!retomarId) return
+    let ativo = true
+    let timer: ReturnType<typeof setTimeout> | undefined
+    async function consultar() {
+      try {
+        const value = await api<{title: string; status: string; extraction_error?: string; job_import_pending?: boolean}>(`/v1/editais/${retomarId}`)
+        if (!ativo) return
+        if (value.job_import_pending) { navigate(`/editais/${retomarId}/cargo`, { replace: true }); return }
+        setNome(current => current || value.title)
+        if (value.status === 'extracted' || value.status === 'confirmed') { limparRascunho(); navigate(`/editais/${retomarId}/revisar`, { replace: true }); return }
+        if (value.status === 'processing') timer = setTimeout(() => void consultar(), 5000)
+        if (value.status === 'failed' && value.extraction_error) setErro(value.extraction_error)
+      } catch (e) { if (ativo) setErro(e instanceof Error ? e.message : 'Não foi possível consultar a importação.') }
+    }
+    void consultar()
+    return () => { ativo = false; clearTimeout(timer) }
+  }, [retomarId, limparRascunho, navigate])
+  useEffect(() => { try { if (respostaIa) sessionStorage.setItem(chaveResposta, respostaIa); else sessionStorage.removeItem(chaveResposta); sessionStorage.removeItem(`studia:importKey:${usuario?.id}`) } catch { /* Large responses can still be imported without a local copy. */ } }, [respostaIa, chaveResposta])
 
   async function copiarPrompt() {
     try {
@@ -112,14 +66,23 @@ export default function UploadEdital() {
 
   async function handleProcessar(arquivo?: File) {
     if (!arquivo || processando || importando) return
+    if (arquivo.size > 15 * 1024 * 1024) { setErro('Envie um PDF de até 15 MB.'); return }
     setErro(''); setProcessando(true)
     try {
-      const id = await iniciarProcessamento(arquivo, nome.trim() || arquivo.name.replace(/\.pdf$/i, '').slice(0, 180))
-      navigate(`/editais/${id}/revisar`)
+      let requestKey: string = crypto.randomUUID()
+      try { const key = `studia:importKey:${usuario?.id}`; requestKey = sessionStorage.getItem(key) ?? requestKey; sessionStorage.setItem(key, requestKey) } catch { /* Retry remains available in Editais. */ }
+      const id = retomarId ?? (await api<{id: string | number}>('/v1/editais', { method: 'POST', body: JSON.stringify({title: nome.trim() || arquivo.name.replace(/\.pdf$/i, '').slice(0, 180), source: 'pdf', request_key: requestKey}) })).id
+      setRetomarId(String(id))
+      try { sessionStorage.setItem(chaveImportacao, String(id)) } catch { /* The draft stays on the server. */ }
+      const form = new FormData(); form.append('file', arquivo); form.append('background', '1')
+      await api(`/v1/editais/${id}/importacao-cargo/preparar`, { method: 'POST', body: form })
+      limparRascunho(); navigate(`/editais/${id}/cargo`)
     } catch (e) {
-      setErro(e instanceof Error ? e.message : 'Não foi possível importar o edital.')
+      guardarRetomada(); setErro(e instanceof Error ? e.message : 'Não foi possível importar o edital.')
     } finally { setProcessando(false) }
   }
+
+  if (new URLSearchParams(location.search).get('manual') === '1') return <Navigate to="/editais/manual" replace />
 
   if (processando) {
     return <TelaLendoEdital />
@@ -127,28 +90,43 @@ export default function UploadEdital() {
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6">
-      <Link to="/editais" className="text-sm text-brand-300">Voltar aos editais</Link>
+      <Link to="/editais" className="text-sm text-brand-600">Voltar aos editais</Link>
       <div>
-        <h1 className="text-xl font-semibold text-white">Enviar edital</h1>
-        <p className="text-sm text-slate-400">
-          Envie um PDF com texto selecionável para que a IA identifique as matérias e os tópicos.
+        <h1 className="text-xl font-semibold text-ink">{retomarId ? 'Retomar importação' : 'Enviar edital'}</h1>
+        <p className="text-sm text-muted">
+          Envie o PDF, escolha seu cargo e confira os conhecimentos gerais e específicos. Depois de enviar, você poderá usar a IA integrada ou copiar o prompt para outra IA.
         </p>
       </div>
 
-      <label className="flex flex-col gap-2 text-sm text-slate-300">
+      <Link to="/editais/manual" className="quiet-link">Prefiro cadastrar manualmente, sem PDF</Link>
+
+      {retomarId && <p role="status" className="daily-hint">Você está retomando o mesmo edital, sem criar outro rascunho. Se a leitura ainda estiver em andamento, aguarde antes de tentar novamente. <button type="button" className="quiet-link" onClick={() => { limparRascunho(); setRetomarId(undefined); setNome(''); setRespostaIa('') }}>Começar outra importação</button></p>}
+      <label className="flex flex-col gap-2 text-sm text-ink">
         Nome do edital
-        <input value={nome} onChange={(e) => setNome(e.target.value)} maxLength={180} placeholder="Ex.: Concurso da universidade 2026" className="rounded-xl border border-white/10 bg-navy-900 px-4 py-3 text-white" />
-        <span className="text-xs text-slate-500">Opcional. O nome identificado pela IA será preenchido após a importação e poderá ser editado na revisão.</span>
+        <input value={nome} onChange={(e) => setNome(e.target.value)} maxLength={180} placeholder="Ex.: Concurso da universidade 2026" className="rounded-md border border-line bg-surface px-4 py-3 text-ink" />
+        <span className="text-xs text-muted">Opcional. O nome identificado pela IA será preenchido após a importação e poderá ser editado na revisão.</span>
       </label>
 
-      <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-white/15 bg-navy-900 px-6 py-12 text-center transition-colors hover:border-brand-400/60">
-        <span className="text-3xl">📄</span>
-        <span className="font-medium text-slate-200">Clique para escolher um PDF</span>
-        <span className="text-xs text-slate-500">ou arraste o arquivo aqui</span>
+      <details className="text-sm"><summary className="cursor-pointer py-3">Já tenho uma resposta JSON completa</summary><p className="mb-3 text-muted">Use esta opção para importar uma resposta já organizada. Para começar pelo cargo, envie o PDF abaixo.</p><button
+        type="button"
+        onClick={() => {
+          setStatusCopia('idle')
+          setMostrarImportacao(true)
+        }}
+        className="rounded-md border border-brand-600 bg-brand-600 px-4 py-3 text-sm font-medium text-on-brand transition-colors hover:bg-brand-500"
+      >
+        Usar minha IA: copiar prompt e importar resposta
+      </button></details>
+
+      <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-line bg-surface px-6 py-12 text-center transition-colors hover:border-brand-400/60">
+        <IconFile className="h-8 w-8" />
+        <span className="font-medium text-ink">Enviar PDF e escolher meu cargo</span>
+        <span className="text-xs text-muted">PDF de até 15 MB. Funciona com IA integrada ou com sua própria IA.</span>
         <input
           type="file"
-          accept="application/pdf"
-          className="hidden"
+          accept="application/pdf" disabled={processando || importando}
+          aria-label="Escolher PDF de até 15 MB"
+          className="mt-3 block max-w-full text-sm"
           onChange={(e) => {
             const arquivo = e.target.files?.[0]
             e.target.value = ''
@@ -157,20 +135,18 @@ export default function UploadEdital() {
         />
       </label>
 
-      <button
-        type="button"
-        onClick={() => {
-          setStatusCopia('idle')
-          setMostrarImportacao(true)
-        }}
-        className="rounded-xl border border-brand-400/30 bg-brand-500/10 px-4 py-3 text-sm font-medium text-brand-200 transition-colors hover:bg-brand-500/15"
-      >
-        Colar resposta do ChatGPT
-      </button>
+
 
       {mostrarImportacao && (
-        <Modal titulo="Importar resposta do ChatGPT" largura="lg" onFechar={() => setMostrarImportacao(false)}>
+        <Modal titulo="Importar resposta da IA" largura="lg" onFechar={() => { if (!importando) setMostrarImportacao(false) }} rodape={          <button
+            type="submit" form="import-response-form"
+            disabled={importando || respostaIa.trim() === ''}
+            className="rounded-md bg-brand-600 px-4 py-3 text-sm font-medium text-on-brand transition-colors hover:bg-brand-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {importando ? 'Aguarde…' : previa ? 'Aplicar importação' : 'Conferir organização'}
+          </button>}>
         <form
+          id="import-response-form"
           className="flex flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault()
@@ -178,56 +154,53 @@ export default function UploadEdital() {
             if (!resposta || importando) return
             setImportando(true)
             setErro('')
-            void importarRespostaIa(resposta, nome.trim() || 'Meu edital')
-              .then((id) => navigate(`/editais/${id}/revisar`))
-              .catch((e) => setErro(e instanceof Error ? e.message : 'Não foi possível importar a resposta.'))
-              .finally(() => setImportando(false))
+            const action = previa
+              ? importarRespostaIa(resposta, nome.trim() || 'Meu edital', retomarId).then(id => { limparRascunho(); navigate(`/editais/${id}/revisar`) })
+              : api<PreviaImportacao>('/v1/editais/prever-importacao', { method: 'POST', body: JSON.stringify({ response: resposta }) }).then(value => { setPrevia(value) })
+            void action.catch(e => { guardarRetomada(); setErro(e instanceof Error ? e.message : 'Não foi possível validar a resposta.') }).finally(() => setImportando(false))
           }}
         >
-          <div className="rounded-xl border border-brand-400/20 bg-brand-500/10 p-4">
-            <p className="text-sm text-slate-300">
-              Anexe o edital ao ChatGPT e envie o prompt abaixo. Depois, cole nesta janela o JSON recebido.
+          {!previa && <><div className="rounded-md border border-brand-400/20 bg-brand-500/10 p-4">
+            <p className="text-sm text-ink">
+              Anexe o edital à IA de sua escolha e envie este prompt. Ele já pede a divisão automática em unidades de estudo. Depois, cole a resposta aqui; você não precisa organizar cada assunto.
             </p>
             <button
               type="button"
               onClick={() => void copiarPrompt()}
-              className="mt-3 w-full rounded-xl border border-brand-400/40 px-4 py-2.5 text-sm font-medium text-brand-200 transition-colors hover:bg-brand-500/15"
+              className="mt-3 w-full rounded-md border border-brand-400/40 px-4 py-2.5 text-sm font-medium text-brand-600 transition-colors hover:bg-brand-500/15"
             >
               {statusCopia === 'copiado' ? 'Prompt copiado' : 'Copiar prompt'}
             </button>
             {statusCopia === 'erro' && (
-              <p role="alert" className="mt-2 text-xs text-red-300">
+              <p role="alert" className="mt-2 text-xs text-red-700">
                 Não foi possível acessar a área de transferência. Verifique a permissão do navegador.
               </p>
             )}
+            <details className="mt-3 text-sm"><summary className="cursor-pointer">Ver prompt para copiar manualmente</summary><textarea aria-label="Prompt de importação" readOnly value={EDITAL_ANALYSIS_PROMPT} rows={8} className="mt-2 w-full min-w-0 rounded-md border border-line bg-soft p-3 text-sm" /></details>
           </div>
           <div>
-            <label htmlFor="resposta-ia" className="text-sm font-medium text-slate-200">
+            <label htmlFor="resposta-ia" className="text-sm font-medium text-ink">
               Resposta JSON da IA
             </label>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-muted">
               Cole o objeto completo com options, groups e os indicadores de cobertura. Blocos iniciados com ```json também são aceitos.
             </p>
           </div>
           <textarea
             id="resposta-ia"
             value={respostaIa}
-            onChange={(e) => setRespostaIa(e.target.value)}
+            onChange={(e) => { setRespostaIa(e.target.value); setPrevia(null) }}
             rows={12}
             required
             spellCheck={false}
             placeholder="Cole aqui o objeto JSON completo retornado pelo ChatGPT"
-            className="resize-y rounded-xl border border-white/10 bg-navy-850 px-4 py-3 font-mono text-xs text-slate-100 placeholder:text-slate-600 focus:border-brand-400/60 focus:outline-none"
+            className="resize-y rounded-md border border-line bg-soft px-4 py-3 font-mono text-xs text-ink placeholder:text-slate-600 focus:border-brand-400/60 focus:outline-none"
           />
-          <button
-            type="submit"
-            disabled={importando || respostaIa.trim() === ''}
-            className="rounded-xl bg-brand-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-brand-500 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {importando ? 'Validando e importando…' : 'Importar e revisar'}
-          </button>
+          </>}
+          {previa && <><PreviaUnidades previa={previa} /><button type="button" disabled={importando} className="quiet-link" onClick={() => setPrevia(null)}>Editar resposta</button></>}
+
           {erro && (
-            <p role="alert" className="rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-sm text-red-200">
+            <p role="alert" className="rounded-md border border-red-400/25 bg-red-400/10 px-4 py-3 text-sm text-red-700">
               {erro}
             </p>
           )}
@@ -236,25 +209,12 @@ export default function UploadEdital() {
       )}
 
       {erro && !mostrarImportacao && (
-        <p role="alert" className="rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-sm text-red-200">
+        <p role="alert" className="rounded-md border border-red-400/25 bg-red-400/10 px-4 py-3 text-sm text-red-700">
           {erro}
         </p>
       )}
 
-      <button
-        type="button"
-        disabled={importando}
-        onClick={() => {
-          setErro(''); setImportando(true)
-          void iniciarCadastroManual(nome.trim() || 'Meu plano de estudos')
-            .then((id) => navigate(`/editais/${id}/revisar`))
-            .catch((e) => setErro(e instanceof Error ? e.message : 'Não foi possível criar o edital.'))
-            .finally(() => setImportando(false))
-        }}
-        className="text-sm text-slate-400 underline underline-offset-2 transition-colors hover:text-slate-300"
-      >
-        Prefiro cadastrar matérias manualmente
-      </button>
+
     </div>
   )
 }

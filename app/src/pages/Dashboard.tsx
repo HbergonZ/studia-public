@@ -1,346 +1,102 @@
-import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useEstudo } from '../context/EstudoContext'
-import AlertaHoje from '../components/AlertaHoje'
-import CalendarioSecao from '../components/CalendarioSecao'
-import CronogramaSecao from '../components/CronogramaSecao'
-import PlanejamentoSecao from '../components/PlanejamentoSecao'
-import MetasSecao from '../components/MetasSecao'
-import TabelaMaterias from '../components/TabelaMaterias'
-import GraficoSemana from '../components/GraficoSemana'
+import { usePlanoDia } from '../lib/usePlanoDia'
+import { usePomodoro } from '../lib/pomodoro'
+import { lerData } from '../lib/datas'
+import type { BlocoPlano } from '../types'
+import PlanoDiario from '../components/PlanoDiario'
+import SessaoFoco from '../components/SessaoFoco'
 import PomodoroFoco from '../components/Pomodoro'
-import { calcularDesempenho, inicioDoDia } from '../lib/curva'
-import { calcularStreak, chaveDia, diasEstudadosDe } from '../lib/streak'
-import { DURACOES_POMODORO, LABELS_POMODORO, formatarTempo, usePomodoro, type ModoPomodoro } from '../lib/pomodoro'
-import { SUBJECT_STYLES } from '../lib/subjectStyles'
-import { IconCheckCircle, IconBook, IconClock } from '../components/icons'
-
-function clamp(valor: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, valor))
-}
-
-function CardPrimeiroAcesso() {
-  const navigate = useNavigate()
-
-  return (
-    <div className="mx-auto flex min-h-[calc(100dvh-160px)] max-w-4xl items-center">
-      <div className="flex w-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-navy-900 md:flex-row">
-        <div className="flex flex-1 flex-col justify-center gap-4 p-10 md:p-12">
-          <span className="text-xs font-semibold uppercase tracking-wide text-brand-400">Primeiro passo</span>
-          <h1 className="font-display text-2xl font-bold leading-snug text-white sm:text-[26px]">
-            Selecione um edital para estudar
-          </h1>
-          <p className="text-base text-slate-400">
-            Ative um dos seus editais ou importe um novo para organizar o cronograma.
-          </p>
-          <button
-            type="button"
-            onClick={() => navigate('/editais')}
-            className="self-start rounded-xl bg-brand-600 px-6 py-3 font-medium text-white transition-all duration-150 hover:scale-[1.015] hover:bg-brand-500 active:scale-[0.985]"
-          >
-            Gerenciar editais
-          </button>
-        </div>
-
-        <div className="relative flex flex-1 items-center justify-center bg-navy-850 p-8">
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{ background: 'radial-gradient(circle at 60% 40%, rgba(108,76,232,0.25), transparent 60%)' }}
-          />
-          <div className="relative flex w-full max-w-[220px] flex-col gap-2.5">
-            <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-navy-900 px-3.5 py-3">
-              <span
-                className="h-2 w-2 shrink-0 rounded-full"
-                style={{ background: 'var(--color-chart-desempenho)' }}
-              />
-              <span className="h-2 flex-1 rounded bg-white/10" />
-            </div>
-            <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-navy-900 px-3.5 py-3">
-              <span
-                className="h-2 w-2 shrink-0 rounded-full"
-                style={{ background: 'var(--color-chart-questoes)' }}
-              />
-              <span className="h-2 w-[65%] rounded bg-white/10" />
-            </div>
-            <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-navy-900 px-3.5 py-3 opacity-60">
-              <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: 'var(--color-brand-400)' }} />
-              <span className="h-2 w-[45%] rounded bg-white/10" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+import RegistrarSessaoModal from '../components/RegistrarSessaoModal'
+import { useCarregamentoPagina } from '../context/CarregamentoPaginaContext'
+import { IconBook } from '../components/icons'
+import CalendarioPlano from '../components/CalendarioPlano'
+import CalendarioSecao from '../components/CalendarioSecao'
+import RitmoSemana from '../components/RitmoSemana'
+import ContinuidadeEstudo from '../components/ContinuidadeEstudo'
 
 export default function Dashboard() {
-  const { nomeEdital, materias, sessoes, statusEdital } = useEstudo()
-  const pomodoro = usePomodoro()
-  const [editandoTempo, setEditandoTempo] = useState(false)
+  const navigate = useNavigate()
+  const { hoje, materias, cronograma, statusEdital, disponibilidade, editalId, erro, recarregar } = useEstudo()
+  const { usuario } = useAuth()
+  const [dataDaMesa, setDataDaMesa] = useState(hoje)
+  const estado = usePlanoDia(dataDaMesa)
+  const pomodoro = usePomodoro(usuario && editalId ? `studia:cronometro:${usuario.id}:${editalId}` : undefined)
+  const [blocoAtivo, setBlocoAtivo] = useState<BlocoPlano | null>(null)
+  const [selected, setSelected] = useState<string | null>(null)
+  const [registrando, setRegistrando] = useState(false)
+  const [mensagem, setMensagem] = useState('')
+  const pending = estado.plano?.blocks.filter(b => b.status === 'planned') ?? []
+  const candidato = pending.find(b => b.id === (pomodoro.rascunho?.blockId ?? selected)) ?? pending[0]
+  const ocupado = pomodoro.rodando || pomodoro.segundosEstudados > 0
+  const bloco = ocupado ? blocoAtivo ?? candidato : candidato
+  const item = cronograma.find(i => i.topico.id === bloco?.topicId) ?? (bloco?.topic ? {
+    materiaId: bloco.topic.subjectId, materiaNome: bloco.topic.subjectName, peso: bloco.topic.weight, cor: bloco.topic.color,
+    topico: { id: bloco.topicId, nome: bloco.topic.title, textoOriginal: bloco.topic.sourceText, dificuldade: bloco.topic.difficulty, posicaoCurva: 0, emAndamento: bloco.topic.continuation, questoes: { acertos: 0, erros: 0 } },
+    status: 'novo' as const, dataPrevista: lerData(hoje),
+  } : undefined)
+  const rotinaDefinida = Object.values(disponibilidade).some(horas => horas > 0)
+  const preparandoPlano = estado.carregando && rotinaDefinida && statusEdital === 'confirmado' && materias.length > 0
+  useCarregamentoPagina(preparandoPlano)
 
-  const horasPomodoro = Math.floor(pomodoro.restante / 3600)
-  const minutosPomodoro = Math.floor((pomodoro.restante % 3600) / 60)
-  const segundosPomodoro = pomodoro.restante % 60
+  useEffect(() => {
+    if (ocupado) return
+    pomodoro.reiniciar(); pomodoro.trocarModo('foco')
+    if (bloco) pomodoro.vincular(bloco.id, dataDaMesa)
+    if (bloco) pomodoro.aplicarTempo(Math.floor(bloco.minutes / 60), bloco.minutes % 60, 0)
+    // The clock belongs to a specific block; a new block starts a fresh clock.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bloco?.id, bloco?.minutes])
 
-  const topicos = materias.flatMap((m) => m.topicos)
-  const total = topicos.length
-  const cobertos = topicos.filter((t) => t.ultimaRevisao).length
-  const dominados = topicos.filter((t) => calcularDesempenho(t.questoes) === 'bom').length
-  const fracos = topicos.filter((t) => calcularDesempenho(t.questoes) === 'ruim').length
-  const percentualCoberto = total === 0 ? 0 : Math.round((cobertos / total) * 100)
+  useEffect(() => {
+    if (!ocupado) return
+    const unload = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = '' }
+    const navigate = (event: MouseEvent) => {
+      const target = event.target instanceof Element ? event.target.closest('a[href]') : null
+      if (target && !target.getAttribute('href')?.startsWith('#') && !window.confirm('Seu estudo ainda não foi registrado. Deseja sair desta tela? O tempo medido ficará como rascunho para recuperar depois.')) { event.preventDefault(); event.stopPropagation() }
+    }
+    window.addEventListener('beforeunload', unload); document.addEventListener('click', navigate, true)
+    return () => { window.removeEventListener('beforeunload', unload); document.removeEventListener('click', navigate, true) }
+  }, [ocupado])
 
-  const hoje = useMemo(() => inicioDoDia(new Date()), [])
-  const diasEstudados = useMemo(() => diasEstudadosDe(sessoes), [sessoes])
-  const streak = useMemo(() => calcularStreak(diasEstudados, hoje), [diasEstudados, hoje])
-  const ultimos7Dias = useMemo(
-    () =>
-      Array.from({ length: 7 }, (_, i) => {
-        const d = new Date(hoje)
-        d.setDate(d.getDate() - (6 - i))
-        return d
-      }),
-    [hoje],
-  )
+  useEffect(() => {
+    if (pomodoro.rascunho) setDataDaMesa(pomodoro.rascunho.date)
+    else if (!ocupado) setDataDaMesa(hoje)
+  }, [hoje, ocupado, pomodoro.rascunho])
 
-  if (materias.length === 0) {
-    return <CardPrimeiroAcesso />
+  async function preparar() {
+    if (bloco) setBlocoAtivo(bloco)
+    if (estado.plano && !estado.plano.id) await estado.salvar(estado.plano.blocks)
   }
-
-  return (
-    <div className="relative">
-      <div className="relative mx-auto flex max-w-7xl flex-col gap-8">
-        <div>
-          <p className="text-sm text-slate-500">Edital em andamento</p>
-          <h1 className="font-display text-2xl font-semibold text-white">{nomeEdital}</h1>
-          {statusEdital !== 'confirmado' && (
-            <p className="mt-1 text-sm text-amber-400">
-              Extração ainda não confirmada. Vá em "Edital" para revisar antes do cronograma valer oficialmente.
-            </p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-stretch">
-          <div className="lg:col-span-2">
-            <AlertaHoje />
-          </div>
-          <div className="flex flex-col gap-4 lg:[&>div]:flex-1">
-            <div className="rounded-2xl border border-white/10 bg-navy-900 p-5">
-              <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
-                <IconCheckCircle className="h-4 w-4" />
-                Progresso geral
-              </h2>
-              <div className="flex items-center gap-4">
-                <ProgressoRing valor={percentualCoberto} />
-                <div className="min-w-0">
-                  <p className="font-display text-4xl font-semibold text-white">{percentualCoberto}%</p>
-                  <p className="text-xs text-slate-500">do edital coberto</p>
-                </div>
-              </div>
-              <div className="mt-4 flex items-center gap-4 border-t border-white/5 pt-4 text-sm">
-                <span className="text-slate-300">
-                  <strong className="font-display font-semibold text-white">{total}</strong> tópicos
-                </span>
-                <span className="h-4 w-px bg-white/10" />
-                <span className="text-slate-300">
-                  <strong className="font-display font-semibold text-emerald-400">{dominados}</strong> dominados
-                </span>
-                <span className="h-4 w-px bg-white/10" />
-                <span className="text-slate-300">
-                  <strong className="font-display font-semibold text-red-400">{fracos}</strong> fracos
-                </span>
-              </div>
-            </div>
-
-            {streak > 0 && (
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-navy-900 px-5 py-4">
-                <div className="flex gap-1.5">
-                  {ultimos7Dias.map((dia) => {
-                    const estudou = diasEstudados.has(chaveDia(dia))
-                    const ehHoje = chaveDia(dia) === chaveDia(hoje)
-                    return (
-                      <span
-                        key={dia.toISOString()}
-                        className={`h-3 w-3 rounded-[4px] ${estudou ? 'bg-emerald-500/80' : 'bg-white/10'} ${
-                          ehHoje ? 'ring-1 ring-brand-400' : ''
-                        }`}
-                      />
-                    )
-                  })}
-                </div>
-                <span className="text-sm text-slate-400">
-                  {streak} {streak === 1 ? 'dia seguido' : 'dias seguidos'}
-                </span>
-              </div>
-            )}
-
-            <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-navy-900 p-4">
-              <div className="flex gap-1 rounded-lg bg-navy-850 p-1 text-xs">
-                {(Object.keys(DURACOES_POMODORO) as ModoPomodoro[]).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => pomodoro.trocarModo(m)}
-                    className={`flex-1 rounded-md px-2 py-1 transition-colors ${
-                      pomodoro.modo === m ? 'bg-brand-600 text-white' : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    {LABELS_POMODORO[m]}
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-brand-500">
-                  <IconClock className="h-5 w-5 text-brand-300" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-slate-500">Sessão de foco</p>
-                  {editandoTempo ? (
-                    <div
-                      className="flex items-center gap-0.5"
-                      onBlur={(e) => {
-                        if (!e.currentTarget.contains(e.relatedTarget as Node)) setEditandoTempo(false)
-                      }}
-                    >
-                      <input
-                        type="number"
-                        min={0}
-                        max={99}
-                        value={String(horasPomodoro).padStart(2, '0')}
-                        aria-label="Horas"
-                        onChange={(e) =>
-                          pomodoro.aplicarTempo(clamp(Number(e.target.value), 0, 99), minutosPomodoro, segundosPomodoro)
-                        }
-                        onKeyDown={(e) => e.key === 'Enter' && setEditandoTempo(false)}
-                        autoFocus
-                        className="campo-tempo-pomodoro w-7 rounded bg-navy-850 text-center font-display text-lg font-semibold text-white outline-none"
-                      />
-                      <span className="font-display text-lg font-semibold text-slate-500">:</span>
-                      <input
-                        type="number"
-                        min={0}
-                        max={59}
-                        value={String(minutosPomodoro).padStart(2, '0')}
-                        aria-label="Minutos"
-                        onChange={(e) =>
-                          pomodoro.aplicarTempo(horasPomodoro, clamp(Number(e.target.value), 0, 59), segundosPomodoro)
-                        }
-                        onKeyDown={(e) => e.key === 'Enter' && setEditandoTempo(false)}
-                        className="campo-tempo-pomodoro w-7 rounded bg-navy-850 text-center font-display text-lg font-semibold text-white outline-none"
-                      />
-                      <span className="font-display text-lg font-semibold text-slate-500">:</span>
-                      <input
-                        type="number"
-                        min={0}
-                        max={59}
-                        value={String(segundosPomodoro).padStart(2, '0')}
-                        aria-label="Segundos"
-                        onChange={(e) =>
-                          pomodoro.aplicarTempo(horasPomodoro, minutosPomodoro, clamp(Number(e.target.value), 0, 59))
-                        }
-                        onKeyDown={(e) => e.key === 'Enter' && setEditandoTempo(false)}
-                        className="campo-tempo-pomodoro w-7 rounded bg-navy-850 text-center font-display text-lg font-semibold text-white outline-none"
-                      />
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => !pomodoro.rodando && setEditandoTempo(true)}
-                      className={`font-display text-lg font-semibold text-white ${!pomodoro.rodando ? 'rounded transition-colors hover:bg-white/10' : ''}`}
-                    >
-                      {formatarTempo(pomodoro.restante)}
-                    </button>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!pomodoro.rodando) {
-                      document.documentElement.requestFullscreen?.().catch(() => {})
-                    }
-                    pomodoro.alternarPlay()
-                  }}
-                  className="shrink-0 rounded-full border border-brand-400/40 px-4 py-1.5 text-xs font-medium text-brand-300 transition-colors hover:bg-brand-500/10"
-                >
-                  {pomodoro.rodando ? 'Pausar' : 'Iniciar'}
-                </button>
-              </div>
-            </div>
-
-            <MetasSecao />
-          </div>
-        </div>
-
-        <CalendarioSecao />
-
-        <CronogramaSecao />
-
-        <PlanejamentoSecao />
-
-        <GraficoSemana />
-
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-navy-900 p-4">
-            <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
-              <IconBook className="h-4 w-4" />
-              Progresso por matéria
-            </h2>
-            <div className="flex flex-col gap-2">
-              {materias.map((materia) => {
-                const totalMateria = materia.topicos.length
-                const cobertosMateria = materia.topicos.filter((t) => t.ultimaRevisao).length
-                const pct = totalMateria === 0 ? 0 : Math.round((cobertosMateria / totalMateria) * 100)
-                const estilo = SUBJECT_STYLES[materia.cor]
-                return (
-                  <div key={materia.id} className="rounded-xl bg-navy-850 p-3">
-                    <div className="mb-1 flex items-center justify-between gap-2 text-sm">
-                      <span className="flex min-w-0 items-center gap-2 font-medium text-slate-100">
-                        <span className={`h-2 w-2 shrink-0 rounded-full ${estilo.dot}`} />
-                        <span className="truncate">{materia.nome}</span>
-                      </span>
-                      <span className="shrink-0 whitespace-nowrap text-slate-500">
-                        peso {materia.peso} · {pct}%
-                      </span>
-                    </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
-                      <div
-                        className={`h-full rounded-full transition-[width] duration-700 ease-out ${estilo.bar}`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-          <TabelaMaterias />
-        </div>
+  function selecionar(block: BlocoPlano) { if (!ocupado) { setSelected(block.id); setMensagem(''); window.scrollTo({ top: 0, behavior: 'smooth' }) } }
+  async function registrar() {
+    if (pomodoro.rodando) pomodoro.encerrar()
+    try { await preparar(); setRegistrando(true) } catch { /* The plan displays the error and remains available. */ }
+  }
+  if (preparandoPlano) return null
+  if (erro && materias.length === 0) return <section className="daily-empty"><h1>Não foi possível carregar seus estudos</h1><p>Seu conteúdo não foi removido. Tente carregar novamente.</p><button className="daily-button" onClick={() => void recarregar()}>Tentar novamente</button></section>
+  if (materias.length === 0) return <section className="first-plan"><div className="first-plan-symbol"><IconBook className="h-10 w-10" /></div><h1>Vamos organizar seus estudos</h1><p>Importe um edital ou cadastre suas matérias para receber um plano que cabe na sua rotina.</p><Link to="/editais" className="primary-link">Escolher edital</Link><Link to="/editais/novo?manual=1" className="quiet-link mt-4">Cadastrar minhas matérias manualmente</Link></section>
+  return <div className="desk-dashboard">
+    <header className="desk-page-heading"><h1>Hoje</h1><Link to="/planejamento" className="quiet-link">Ver planejamento</Link></header>
+    {statusEdital !== 'confirmado' ? <p className="desk-notice">Confirme o conteúdo do edital antes de organizar seus estudos. <Link to="/editais">Revisar edital</Link></p> : !rotinaDefinida ? <section className="daily-empty"><h2>Quanto tempo você tem para estudar?</h2><p>Defina sua disponibilidade para receber poucos blocos por dia, dentro do tempo que você tem.</p><Link to="/configuracao" className="primary-link">Definir minha rotina</Link></section> : <>
+      {pomodoro.erroRascunho && <p role="alert" className="daily-error">{pomodoro.erroRascunho}</p>}
+      {pomodoro.rascunho && <section className="daily-hint" aria-label="Estudo não registrado"><h2>Você tem um estudo não registrado</h2><p>{Math.ceil(pomodoro.rascunho.segundosEstudados / 60)} min medidos em {lerData(pomodoro.rascunho.date).toLocaleDateString('pt-BR')}. A recuperação mantém o cronômetro pausado.</p>{pending.some(b => b.id === pomodoro.rascunho?.blockId) ? <button className="daily-button daily-button-primary" onClick={() => { setBlocoAtivo(pending.find(b => b.id === pomodoro.rascunho?.blockId) ?? null); pomodoro.recuperar() }}>Recuperar estudo</button> : <p>O bloco foi alterado ou concluído. Confira seu histórico antes de registrar esse tempo manualmente em Tópicos.</p>}<button className="daily-button" onClick={() => { if (window.confirm('Descartar o rascunho deste estudo?')) pomodoro.apagarRascunho() }}>Descartar rascunho</button></section>}
+      {dataDaMesa !== hoje && ocupado && <p role="status" className="daily-hint">O dia mudou. Este registro continuará vinculado a {lerData(dataDaMesa).toLocaleDateString('pt-BR')}, quando a sessão começou.</p>}
+      {mensagem && <p role="status" className="daily-success">{mensagem}</p>}
+      <div className={`agenda-today ${!bloco ? 'without-focus' : ''}`}><aside><CalendarioPlano data={hoje} bloqueado={ocupado} onSelecionar={dia => navigate(`/planejamento?data=${dia}`)} /></aside>
+      {bloco && item && <div id="sessao">
+        <SessaoFoco estado={pomodoro} item={item} onRegistrar={() => void registrar()} onIniciar={preparar} bloqueado={estado.salvando || estado.atualizando || !!pomodoro.rascunho} />
+        {ocupado && <p className="daily-hint">Ao terminar, registre o estudo para salvar seu tempo e liberar o próximo bloco.</p>}
+      </div>}
+      <PlanoDiario estado={estado} fixo selecionado={bloco?.id} onSelecionar={selecionar} bloqueado={ocupado || estado.atualizando || !!pomodoro.rascunho} />
       </div>
-
-      <PomodoroFoco estado={pomodoro} />
-    </div>
-  )
-}
-
-function ProgressoRing({ valor }: { valor: number }) {
-  const raio = 37
-  const circunferencia = 2 * Math.PI * raio
-  const offset = circunferencia * (1 - valor / 100)
-
-  return (
-    <svg width="86" height="86" viewBox="0 0 86 86" className="shrink-0 -rotate-90">
-      <circle cx="43" cy="43" r={raio} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
-      <circle
-        cx="43"
-        cy="43"
-        r={raio}
-        fill="none"
-        stroke="var(--color-brand-400)"
-        strokeWidth="8"
-        strokeLinecap="round"
-        strokeDasharray={circunferencia}
-        strokeDashoffset={offset}
-        className="transition-[stroke-dashoffset] duration-700 ease-out"
-      />
-    </svg>
-  )
+      <div className="agenda-history"><CalendarioSecao somenteAtividade /><RitmoSemana /></div>
+      <ContinuidadeEstudo plano={estado.plano} />
+      <div className="daily-links"><Link to="/planejamento">Calendário e revisões</Link><Link to="/visao-geral">Todo o conteúdo do edital</Link><Link to="/progresso">Meu progresso</Link></div>
+    </>}
+    {registrando && bloco && bloco.topic && estado.plano?.id && <RegistrarSessaoModal materiaId={bloco.topic.subjectId} materiaNome={bloco.topic.subjectName} topicoId={bloco.topicId} topicoNome={bloco.topic.title} textoOriginal={bloco.topic.sourceText} dificuldadeAtual={bloco.topic.difficulty} tempoInicial={Math.ceil(pomodoro.segundosEstudados / 60)} concluirInicial={!!bloco.topic.nextReviewAt && !bloco.topic.continuation} dataInicial={estado.plano.date} planoId={estado.plano.id} blocoId={bloco.id} onFechar={() => setRegistrando(false)} onSalvar={resultado => { pomodoro.reiniciar(true); setBlocoAtivo(null); setSelected(null); setMensagem(resultado.nextReviewAt ? `Estudo salvo. Próxima revisão: ${lerData(resultado.nextReviewAt).toLocaleDateString('pt-BR')}.` : 'Estudo salvo. O assunto fica disponível para continuar.'); }} />}
+    <PomodoroFoco estado={pomodoro} onRegistrar={() => void registrar()} />
+  </div>
 }

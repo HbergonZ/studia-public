@@ -6,7 +6,7 @@ if [ ! -f vendor/autoload.php ]; then
 fi
 
 mkdir -p writable/cache writable/debugbar writable/logs writable/session writable/uploads
-chmod -R u+rwX,g+rwX writable
+chmod u+rwx,g+rwx writable writable/cache writable/debugbar writable/logs writable/session writable/uploads
 
 encryption_key="$(printenv 'encryption.key' || true)"
 if [ -z "$encryption_key" ]; then

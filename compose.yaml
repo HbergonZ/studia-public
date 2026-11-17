@@ -53,6 +53,19 @@ services:
       retries: 10
     restart: unless-stopped
 
+  worker:
+    image: studia-php
+    extends:
+      service: php
+    command: ["php", "spark", "imports:work"]
+    depends_on:
+      php:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    mem_limit: 768m
+    cpus: 1
+
   postgres:
     image: postgres:16-alpine
     environment:

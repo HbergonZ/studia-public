@@ -86,7 +86,7 @@ export function Bichinho({ tipo, ativo }: { tipo: 'dormindo' | 'lanchando'; ativ
   )
 }
 
-export default function PomodoroFoco({ estado }: { estado: PomodoroEstado }) {
+export default function PomodoroFoco({ estado, onRegistrar }: { estado: PomodoroEstado; onRegistrar?: () => void }) {
   const { modo, duracaoBase, restante, rodando, modoFoco, reiniciar, alternarPlay, encerrar, aplicarTempo } = estado
 
   useEffect(() => {
@@ -113,6 +113,7 @@ export default function PomodoroFoco({ estado }: { estado: PomodoroEstado }) {
       document.exitFullscreen().catch(() => {})
     }
     encerrar()
+    if (estado.segundosEstudados > 0) onRegistrar?.()
   }
 
   const horas = Math.floor(restante / 3600)
@@ -143,13 +144,13 @@ export default function PomodoroFoco({ estado }: { estado: PomodoroEstado }) {
   const offset = circunferencia * (1 - progresso)
 
   return (
-    <div className="animate-overlay fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-navy-950">
+    <div className="animate-overlay fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-focus-950">
       <div className="absolute inset-0 bg-brand-600/70 mix-blend-multiply" />
-      <div className="absolute inset-0 bg-navy-950/60" />
+      <div className="absolute inset-0 bg-focus-950/60" />
 
       <div className="relative z-10 flex w-full flex-col items-center justify-center">
         <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-brand-300">
-          {LABELS_POMODORO[modo]} máximo
+          {restante === 0 ? 'Tempo concluído' : LABELS_POMODORO[modo]}
         </p>
 
         <div className="relative mx-auto mb-6 aspect-square w-[clamp(200px,min(70vw,52vh),460px)] sm:mb-8">
@@ -200,7 +201,7 @@ export default function PomodoroFoco({ estado }: { estado: PomodoroEstado }) {
           </button>
           <button
             type="button"
-            onClick={reiniciar}
+            onClick={() => reiniciar()}
             className="flex items-center justify-center gap-2 rounded-lg border border-white/15 px-4 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 sm:px-5 sm:py-3 sm:text-base"
           >
             <IconReset className="h-5 w-5" />
@@ -211,7 +212,7 @@ export default function PomodoroFoco({ estado }: { estado: PomodoroEstado }) {
             onClick={encerrarSessao}
             className="flex items-center justify-center gap-2 rounded-lg border border-white/15 px-4 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 sm:px-5 sm:py-3 sm:text-base"
           >
-            Encerrar
+            {onRegistrar && estado.segundosEstudados > 0 ? 'Encerrar e registrar' : 'Encerrar'}
           </button>
         </div>
       </div>
@@ -238,7 +239,7 @@ function CampoTempo({
       value={String(valor).padStart(2, '0')}
       aria-label={rotulo}
       onChange={(e) => onChange(clamp(Number(e.target.value), 0, max))}
-      className="campo-tempo-pomodoro w-[clamp(2.75rem,12vw,6rem)] rounded-lg bg-transparent text-center text-[clamp(1.75rem,7vw,4.5rem)] font-semibold tabular-nums text-white outline-none transition-colors hover:bg-navy-850 focus:bg-navy-850"
+      className="campo-tempo-pomodoro w-[clamp(2.75rem,12vw,6rem)] rounded-lg bg-transparent text-center text-[clamp(1.75rem,7vw,4.5rem)] font-semibold tabular-nums text-white outline-none transition-colors hover:bg-focus-850 focus:bg-focus-850"
     />
   )
 }

@@ -93,15 +93,40 @@ final class EditalStructureValidator
     public function validate(mixed $value):array
     {
         if(!is_array($value))throw new RuntimeException('A resposta não contém uma estrutura válida.');
+        foreach (['options','groups','warnings'] as $field) $this->requireList($value[$field] ?? []);
+        foreach (['has_study_syllabus','extraction_complete'] as $field) {
+            if (isset($value[$field]) && !is_bool($value[$field])) throw new RuntimeException('Os indicadores de cobertura devem ser true ou false.');
+        }
+        foreach ($value['warnings'] ?? [] as $warning) $this->requireText($warning, 1500);
+        foreach ($value['options'] ?? [] as $option) {
+            if (!is_array($option)) throw new RuntimeException('Opção de cargo inválida.');
+            $this->requireText($option['name'] ?? null, 240);
+            $this->requireText($option['ref'] ?? null, 80);
+        }
+        foreach ($value['groups'] ?? [] as $group) {
+            if (!is_array($group)) throw new RuntimeException('Bloco de conteúdo inválido.');
+            $this->requireText($group['name'] ?? null, 240);
+            $this->requireText($group['ref'] ?? null, 80);
+            $this->requireList($group['applicability'] ?? []);
+            $this->requireList($group['subjects'] ?? []);
+            foreach ($group['applicability'] ?? [] as $application) {
+                if (!is_array($application) || !is_string($application['option_ref'] ?? null)) throw new RuntimeException('Referência de cargo inválida.');
+            }
+            foreach ($group['subjects'] ?? [] as $subject) {
+                if (!is_array($subject)) throw new RuntimeException('Matéria inválida.');
+                $this->requireText($subject['name'] ?? null, 240);
+                $this->requireList($subject['topics'] ?? []);
+            }
+        }
         $title=$value['title']??null;
         if($title!==null&&!is_string($title))throw new RuntimeException('O nome do edital deve ser um texto.');
         $title=$title===null?null:trim($title);
         if($title==='')$title=null;
         if($title!==null&&mb_strlen($title)>180)throw new RuntimeException('O nome do edital deve ter até 180 caracteres.');
-        $has=(bool)($value['has_study_syllabus']??true);$complete=(bool)($value['extraction_complete']??false);$options=[];$optionRefs=[];
+        if(isset($value['study_units_version'])&&($value['study_units_version']!==1||($value['extraction_complete']??null)!==true))throw new RuntimeException('A organização precisa estar completa e usar study_units_version 1.');$has=(bool)($value['has_study_syllabus']??true);$complete=(bool)($value['extraction_complete']??false);$options=[];$optionRefs=[];
         foreach(($value['options']??[]) as $o){if(!is_array($o))continue;$ref=trim((string)($o['ref']??''));$name=trim((string)($o['name']??''));$kind=(string)($o['kind']??'other');if($ref===''||$name===''||isset($optionRefs[$ref]))throw new RuntimeException('As opções do edital possuem identificadores inválidos ou duplicados.');if(!in_array($kind,['job','employment','profile','specialty','area','emphasis','level','code','block','other'],true))throw new RuntimeException('Tipo de opção inválido.');$optionRefs[$ref]=true;$options[]=['ref'=>$ref,'code'=>trim((string)($o['code']??''))?:null,'name'=>$name,'kind'=>$kind];}
         $groups=[];$groupRefs=[];
-        foreach(($value['groups']??[]) as $g){if(!is_array($g))continue;$ref=trim((string)($g['ref']??''));$name=trim((string)($g['name']??''));$type=(string)($g['knowledge_type']??'uncertain');if($ref===''||$name===''||isset($groupRefs[$ref]))throw new RuntimeException('Os blocos possuem identificadores inválidos ou duplicados.');if(!in_array($type,['general','specific','uncertain'],true))throw new RuntimeException('Tipo de conhecimento inválido.');$app=[];foreach(($g['applicability']??[]) as $a){$or=(string)($a['option_ref']??'');if(!isset($optionRefs[$or]))throw new RuntimeException('Um bloco referencia uma opção inexistente.');$app[]=['option_ref'=>$or,'weight'=>isset($a['weight'])&&is_numeric($a['weight'])?(float)$a['weight']:null];}$subjects=[];foreach(($g['subjects']??[]) as $s){$sn=trim((string)($s['name']??''));$topics=[];foreach(($s['topics']??[]) as $t){$t=trim((string)$t);if($t!=='')$topics[]=$t;}if($sn!==''&&$topics!==[])$subjects[]=['name'=>$sn,'topics'=>$topics];}if($subjects===[])throw new RuntimeException('Um bloco não contém disciplinas e tópicos válidos.');$appliesToAll=(bool)($g['applies_to_all']??false);if(!$appliesToAll&&$app===[]){if($type==='general'||$options===[])$appliesToAll=true;elseif(count($options)===1)$app[]=['option_ref'=>$options[0]['ref'],'weight'=>null];else throw new RuntimeException('O bloco "'.$name.'" não possui aplicabilidade definida.');}$groupRefs[$ref]=true;$groups[]=['ref'=>$ref,'name'=>$name,'knowledge_type'=>$type,'applies_to_all'=>$appliesToAll,'applicability'=>$app,'subjects'=>$subjects];}
+        foreach(($value['groups']??[]) as $g){if(!is_array($g))continue;$ref=trim((string)($g['ref']??''));$name=trim((string)($g['name']??''));$type=(string)($g['knowledge_type']??'uncertain');if($ref===''||$name===''||isset($groupRefs[$ref]))throw new RuntimeException('Os blocos possuem identificadores inválidos ou duplicados.');if(!in_array($type,['general','specific','uncertain'],true))throw new RuntimeException('Tipo de conhecimento inválido.');$app=[];foreach(($g['applicability']??[]) as $a){$or=(string)($a['option_ref']??'');if(!isset($optionRefs[$or]))throw new RuntimeException('Um bloco referencia uma opção inexistente.');$app[]=['option_ref'=>$or,'weight'=>isset($a['weight'])&&is_numeric($a['weight'])?(float)$a['weight']:null];}$subjects=[];foreach(($g['subjects']??[]) as $s){$sn=trim((string)($s['name']??''));$topics=[];foreach(($s['topics']??[]) as $t){if(is_array($t)){$topics[]=(new StudyUnitValidator())->topic($t);}elseif(is_string($t)&&trim($t)!==''&&mb_strlen($t)<=20000){$topics[]=trim($t);}else throw new RuntimeException('Assunto inválido ou acima do limite.');}if($sn!==''&&$topics!==[])$subjects[]=['name'=>$sn,'topics'=>$topics];}if($subjects===[])throw new RuntimeException('Um bloco não contém disciplinas e tópicos válidos.');$appliesToAll=(bool)($g['applies_to_all']??false);if(!$appliesToAll&&$app===[]){if($type==='general'||$options===[])$appliesToAll=true;elseif(count($options)===1)$app[]=['option_ref'=>$options[0]['ref'],'weight'=>null];else throw new RuntimeException('O bloco "'.$name.'" não possui aplicabilidade definida.');}$groupRefs[$ref]=true;$groups[]=['ref'=>$ref,'name'=>$name,'knowledge_type'=>$type,'applies_to_all'=>$appliesToAll,'applicability'=>$app,'subjects'=>$subjects];}
         if(!$has&&$groups!==[])throw new RuntimeException('Um edital sem conteúdo estudável não pode conter blocos de estudo.');if($has&&$groups===[])throw new RuntimeException('Nenhum conteúdo programático válido foi identificado.');
         return ['title'=>$title,'has_study_syllabus'=>$has,'extraction_complete'=>$complete,'options'=>$options,'groups'=>$groups,'warnings'=>array_values(array_filter(array_map('strval',$value['warnings']??[])))];
     }

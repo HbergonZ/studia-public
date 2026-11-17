@@ -14,6 +14,8 @@ server/writable/debugbar/*
 server/writable/logs/*
 server/writable/session/*
 server/writable/uploads/*
+server/writable/testing/
+server/writable/backups/
 !server/writable/**/.gitkeep
 
 # Sistema operacional

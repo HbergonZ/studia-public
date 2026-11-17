@@ -1,0 +1,480 @@
+{
+  "study_units_version": 1,
+  "title": "Saúde de Porto Velho/RO - Edital nº 25/2026 - Teste Enfermeiro 725",
+  "has_study_syllabus": true,
+  "extraction_complete": true,
+  "options": [
+    {
+      "ref": "enfermeiro-725",
+      "code": "725",
+      "name": "Enfermeiro - Área Urbana - Porto Velho",
+      "kind": "job"
+    }
+  ],
+  "groups": [
+    {
+      "ref": "gerais-superior",
+      "name": "Conhecimentos gerais - Ensino superior",
+      "knowledge_type": "general",
+      "applies_to_all": true,
+      "applicability": [],
+      "subjects": [
+        {
+          "name": "Língua Portuguesa",
+          "topics": [
+            {
+              "title": "Língua Portuguesa",
+              "source": "Compreensão e interpretação de textos. Gêneros e tipos de textos. Variação linguística: diversidade de usos da língua. Discursos direto, indireto e indireto livre. Coerência e coesão textuais. Estratégias argumentativas. Processos de formação de palavras. Classes de palavras: identificação, flexão e emprego de substantivos, adjetivos, pronomes, verbos, advérbios, preposições e conjunções. Verbo: flexão, conjugação, correlação dos modos e tempos verbais, vozes. Estrutura da oração e do período: aspectos sintáticos e semânticos. Concordância verbal e nominal. Regência verbal e nominal. Uso dos pronomes relativos. Colocação dos pronomes pessoais oblíquos átonos. Emprego do sinal indicativo da crase. Usos da pontuação. Ortografia oficial. Acentuação gráfica.",
+              "units": [
+                {
+                  "title": "Compreensão e interpretação de textos",
+                  "source": "Compreensão e interpretação de textos."
+                },
+                {
+                  "title": "Gêneros e tipos de textos",
+                  "source": "Gêneros e tipos de textos."
+                },
+                {
+                  "title": "Variação linguística: diversidade de usos da língua",
+                  "source": "Variação linguística: diversidade de usos da língua."
+                },
+                {
+                  "title": "Discursos direto, indireto e indireto livre",
+                  "source": "Discursos direto, indireto e indireto livre."
+                },
+                {
+                  "title": "Coerência e coesão textuais",
+                  "source": "Coerência e coesão textuais."
+                },
+                {
+                  "title": "Estratégias argumentativas",
+                  "source": "Estratégias argumentativas."
+                },
+                {
+                  "title": "Processos de formação de palavras",
+                  "source": "Processos de formação de palavras."
+                },
+                {
+                  "title": "Classes de palavras: identificação, flexão e emprego de substantivos, adjetivos, pronomes, verbos, advérbios, preposições e conjunções",
+                  "source": "Classes de palavras: identificação, flexão e emprego de substantivos, adjetivos, pronomes, verbos, advérbios, preposições e conjunções."
+                },
+                {
+                  "title": "Verbo: flexão, conjugação, correlação dos modos e tempos verbais, vozes",
+                  "source": "Verbo: flexão, conjugação, correlação dos modos e tempos verbais, vozes."
+                },
+                {
+                  "title": "Estrutura da oração e do período: aspectos sintáticos e semânticos",
+                  "source": "Estrutura da oração e do período: aspectos sintáticos e semânticos."
+                },
+                {
+                  "title": "Concordância verbal e nominal",
+                  "source": "Concordância verbal e nominal."
+                },
+                {
+                  "title": "Regência verbal e nominal",
+                  "source": "Regência verbal e nominal."
+                },
+                {
+                  "title": "Uso dos pronomes relativos",
+                  "source": "Uso dos pronomes relativos."
+                },
+                {
+                  "title": "Colocação dos pronomes pessoais oblíquos átonos",
+                  "source": "Colocação dos pronomes pessoais oblíquos átonos."
+                },
+                {
+                  "title": "Emprego do sinal indicativo da crase",
+                  "source": "Emprego do sinal indicativo da crase."
+                },
+                {
+                  "title": "Usos da pontuação",
+                  "source": "Usos da pontuação."
+                },
+                {
+                  "title": "Ortografia oficial",
+                  "source": "Ortografia oficial."
+                },
+                {
+                  "title": "Acentuação gráfica",
+                  "source": "Acentuação gráfica."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Raciocínio Lógico",
+          "topics": [
+            {
+              "title": "Raciocínio Lógico",
+              "source": "Conjuntos numéricos: naturais, inteiros, racionais e reais. Operações de adição, subtração, multiplicação, divisão, potenciação e radiciação; números decimais; valor absoluto; propriedades no conjunto dos números naturais; decomposição de um número natural em fatores primos; múltiplos e divisores; máximo divisor comum e mínimo múltiplo comum. Razões e proporções: grandezas direta e inversamente proporcionais; regra de três simples e composta. Porcentagem. Grandezas e medidas: quantidade, tempo, comprimento, capacidade e massa. Equações do 1º grau, sistemas de equações do 1º grau e função do 1º grau: resolução de problemas. Média aritmética simples e ponderada. Noções de lógica matemática: proposições simples e compostas; conectivos lógicos; tabelas-verdade; negação de proposições; equivalências e implicações lógicas; quantificadores. Argumentação lógica: premissas e conclusões; inferências; análise e validade de argumentos. Diagramas lógicos. Linguagem dos conjuntos: notação e representação; elementos e relação de pertinência; igualdade de conjuntos; relação de inclusão e subconjuntos; conjunto unitário, conjunto vazio, conjunto universo e conjunto das partes; conjuntos finitos e infinitos; operações com conjuntos - união, interseção, diferença e complementar. Sequências lógicas com números, letras, palavras e figuras. Problemas de associação lógica e de verdades e mentiras. Análise combinatória: princípio fundamental da contagem, arranjos, permutações e combinações. Probabilidade: conceitos básicos e cálculo de probabilidades em espaços amostrais finitos. Resolução de problemas envolvendo raciocínio lógico e sequencial.",
+              "units": [
+                {
+                  "title": "Conjuntos numéricos: naturais, inteiros, racionais e reais",
+                  "source": "Conjuntos numéricos: naturais, inteiros, racionais e reais."
+                },
+                {
+                  "title": "Operações de adição, subtração, multiplicação, divisão, potenciação e radiciação; números decimais; valor absoluto; propriedades…",
+                  "source": "Operações de adição, subtração, multiplicação, divisão, potenciação e radiciação; números decimais; valor absoluto; propriedades no conjunto dos números naturais; decomposição de um número natural em fatores primos; múltiplos e divisores; máximo divisor comum e mínimo múltiplo comum."
+                },
+                {
+                  "title": "Razões e proporções: grandezas direta e inversamente proporcionais; regra de três simples e composta",
+                  "source": "Razões e proporções: grandezas direta e inversamente proporcionais; regra de três simples e composta."
+                },
+                {
+                  "title": "Porcentagem",
+                  "source": "Porcentagem."
+                },
+                {
+                  "title": "Grandezas e medidas: quantidade, tempo, comprimento, capacidade e massa",
+                  "source": "Grandezas e medidas: quantidade, tempo, comprimento, capacidade e massa."
+                },
+                {
+                  "title": "Equações do 1º grau, sistemas de equações do 1º grau e função do 1º grau: resolução de problemas",
+                  "source": "Equações do 1º grau, sistemas de equações do 1º grau e função do 1º grau: resolução de problemas."
+                },
+                {
+                  "title": "Média aritmética simples e ponderada",
+                  "source": "Média aritmética simples e ponderada."
+                },
+                {
+                  "title": "Noções de lógica matemática",
+                  "source": "Noções de lógica matemática: proposições simples e compostas; conectivos lógicos; tabelas-verdade; negação de proposições; equivalências e implicações lógicas; quantificadores."
+                },
+                {
+                  "title": "Argumentação lógica: premissas e conclusões; inferências; análise e validade de argumentos",
+                  "source": "Argumentação lógica: premissas e conclusões; inferências; análise e validade de argumentos."
+                },
+                {
+                  "title": "Diagramas lógicos",
+                  "source": "Diagramas lógicos."
+                },
+                {
+                  "title": "Linguagem dos conjuntos",
+                  "source": "Linguagem dos conjuntos: notação e representação; elementos e relação de pertinência; igualdade de conjuntos; relação de inclusão e subconjuntos; conjunto unitário, conjunto vazio, conjunto universo e conjunto das partes; conjuntos finitos e infinitos; operações com conjuntos - união, interseção, diferença e complementar."
+                },
+                {
+                  "title": "Sequências lógicas com números, letras, palavras e figuras",
+                  "source": "Sequências lógicas com números, letras, palavras e figuras."
+                },
+                {
+                  "title": "Problemas de associação lógica e de verdades e mentiras",
+                  "source": "Problemas de associação lógica e de verdades e mentiras."
+                },
+                {
+                  "title": "Análise combinatória: princípio fundamental da contagem, arranjos, permutações e combinações",
+                  "source": "Análise combinatória: princípio fundamental da contagem, arranjos, permutações e combinações."
+                },
+                {
+                  "title": "Probabilidade: conceitos básicos e cálculo de probabilidades em espaços amostrais finitos",
+                  "source": "Probabilidade: conceitos básicos e cálculo de probabilidades em espaços amostrais finitos."
+                },
+                {
+                  "title": "Resolução de problemas envolvendo raciocínio lógico e sequencial",
+                  "source": "Resolução de problemas envolvendo raciocínio lógico e sequencial."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Conhecimentos Gerais e Atualidades",
+          "topics": [
+            {
+              "title": "Conhecimentos Gerais e Atualidades",
+              "source": "Cultura Geral: Fatos Políticos econômicos e sociais do Município, do Estado, do Brasil e do mundo ocorridos nos últimos 05 (cinco) anos, divulgados na mídia nacional e internacional. Humanidades: movimentos artísticos, culturais e sociais do Município, do Estado, do Brasil e do mundo. Conhecimentos Gerais e Atualidades: aspectos geográficos, históricos, físicos, econômicos, sociais, políticos e estatísticos do Município, do Estado, do Brasil e do mundo. Noções de cidadania. Símbolos nacionais, estaduais e municipais. Atualidades nos assuntos relacionados com economia, ecologia, história, política, meio ambiente, justiça, segurança pública, saúde, cultura, educação, religião, qualidade de vida, esportes, turismo, georreferenciamento, inovações tecnológicas e científicas do Município, do Estado, do Brasil e do mundo. Questões da realidade, econômica, cultural, história, geográfica e socioambiental do Município, do Estado, do Brasil e do mundo. Notícias em Geral: Site da Prefeitura de Porto Velho/RO.",
+              "units": [
+                {
+                  "title": "Cultura Geral",
+                  "source": "Cultura Geral: Fatos Políticos econômicos e sociais do Município, do Estado, do Brasil e do mundo ocorridos nos últimos 05 (cinco) anos, divulgados na mídia nacional e internacional."
+                },
+                {
+                  "title": "Humanidades: movimentos artísticos, culturais e sociais do Município, do Estado, do Brasil e do mundo",
+                  "source": "Humanidades: movimentos artísticos, culturais e sociais do Município, do Estado, do Brasil e do mundo."
+                },
+                {
+                  "title": "Conhecimentos Gerais e Atualidades",
+                  "source": "Conhecimentos Gerais e Atualidades: aspectos geográficos, históricos, físicos, econômicos, sociais, políticos e estatísticos do Município, do Estado, do Brasil e do mundo."
+                },
+                {
+                  "title": "Noções de cidadania",
+                  "source": "Noções de cidadania."
+                },
+                {
+                  "title": "Símbolos nacionais, estaduais e municipais",
+                  "source": "Símbolos nacionais, estaduais e municipais."
+                },
+                {
+                  "title": "Atualidades nos assuntos relacionados com economia, ecologia, história, política, meio ambiente, justiça, segurança pública,…",
+                  "source": "Atualidades nos assuntos relacionados com economia, ecologia, história, política, meio ambiente, justiça, segurança pública, saúde, cultura, educação, religião, qualidade de vida, esportes, turismo, georreferenciamento, inovações tecnológicas e científicas do Município, do Estado, do Brasil e do mundo."
+                },
+                {
+                  "title": "Questões da realidade, econômica, cultural, história, geográfica e socioambiental do Município, do Estado, do Brasil e do mundo",
+                  "source": "Questões da realidade, econômica, cultural, história, geográfica e socioambiental do Município, do Estado, do Brasil e do mundo."
+                },
+                {
+                  "title": "Notícias em Geral: Site da Prefeitura de Porto Velho/RO",
+                  "source": "Notícias em Geral: Site da Prefeitura de Porto Velho/RO."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Legislação Saúde",
+          "topics": [
+            {
+              "title": "Legislação Saúde",
+              "source": "Legislação e Saúde Pública: Constituição da República Federativa do Brasil, com as Emendas Constitucionais: arts. 196 a 200. Sistema Único de Saúde (SUS): história do sistema de saúde no Brasil; Reforma Sanitária Brasileira; concepção, princípios, diretrizes e organização do SUS; Lei Orgânica da Saúde; participação e controle social; modelos de atenção à saúde; regionalização e descentralização; redes de atenção à saúde; atenção à saúde no SUS. Legislação Federal de Saúde Pública: Lei Federal nº 8.080/1990 e alterações. Lei Federal nº 8.142/1990 e alterações. Legislação e normas vigentes relacionadas à organização, ao funcionamento, ao financiamento, à participação e ao controle social do SUS. Atenção Primária à Saúde (APS): conceitos, princípios e atributos. Atenção Básica. Política Nacional de Atenção Básica (PNAB). Estratégia Saúde da Família. Equipes e organização da Atenção Primária à Saúde. Territorialização. Cadastramento e adscrição da população. Ações de promoção, prevenção, proteção e recuperação da saúde. Coordenação do cuidado e ordenação das Redes de Atenção à Saúde. Vigilância em Saúde: conceitos, princípios e evolução da Vigilância em Saúde. Organização e atuação da Vigilância em Saúde nas três esferas de gestão do SUS. Componentes e elementos da Vigilância em Saúde. Vigilância Epidemiológica. Vigilância Sanitária. Vigilância em Saúde Ambiental. Vigilância em Saúde do Trabalhador. Vigilância de doenças, agravos e eventos de saúde pública. Notificação compulsória. Investigação epidemiológica. Monitoramento e resposta a surtos e epidemias. Sistemas de informação utilizados na Vigilância em Saúde. Vigilância Epidemiológica: conceitos, objetivos e atribuições. Vigilância epidemiológica das doenças transmissíveis. Vigilância epidemiológica das doenças e agravos não transmissíveis. Investigação de casos e surtos. Medidas de prevenção e controle. Imunização e vigilância das coberturas vacinais. Notificação compulsória de doenças, agravos e eventos de saúde pública. Vigilância Sanitária: conceitos, objetivos e atribuições. Ações de prevenção e controle de riscos à saúde. Fiscalização, inspeção e monitoramento sanitário. Vigilância em Saúde Ambiental: conceitos e campos de atuação. Vigilância de fatores ambientais relacionados à saúde. Qualidade da água para consumo humano. Vigilância de populações expostas a contaminantes ambientais. Doenças e agravos relacionados a fatores ambientais. Vigilância em Saúde do Trabalhador: conceitos, princípios e atribuições. Promoção e proteção da saúde dos trabalhadores. Investigação e notificação dos agravos relacionados ao trabalho. Prevenção e controle dos riscos e doenças relacionados aos processos e ambientes de trabalho. Epidemiologia: conceitos básicos, objetivos e aplicações. História natural das doenças e níveis de prevenção. Medidas de frequência e ocorrência de doenças e agravos. Indicadores de saúde. Incidência, prevalência, mortalidade e letalidade. Tipos de estudos epidemiológicos. Vigilância epidemiológica e investigação de surtos. Avaliação de serviços e programas de saúde. Sistemas de Informação em Saúde: conceitos, finalidade e utilização. Sistemas de informação de interesse para o SUS e para a Vigilância em Saúde. Registro, processamento, análise e utilização dos dados para o planejamento, monitoramento e avaliação das ações e serviços de saúde. Documentos e normas técnicas do Ministério da Saúde: Guia de Vigilância em Saúde, 6ª edição revisada, e atualizações. Guia de Vigilância Integrada da Covid-19, Influenza e outros vírus respiratórios de importância em saúde pública e atualizações.",
+              "units": [
+                {
+                  "title": "Constituição: direito à saúde",
+                  "source": "Legislação e Saúde Pública: Constituição da República Federativa do Brasil, com as Emendas Constitucionais: arts. 196 a 200."
+                },
+                {
+                  "title": "História, princípios e organização do SUS",
+                  "source": "Sistema Único de Saúde (SUS): história do sistema de saúde no Brasil; Reforma Sanitária Brasileira; concepção, princípios, diretrizes e organização do SUS; Lei Orgânica da Saúde; participação e controle social; modelos de atenção à saúde; regionalização e descentralização; redes de atenção à saúde; atenção à saúde no SUS."
+                },
+                {
+                  "title": "Leis 8.080/1990 e 8.142/1990",
+                  "source": "Legislação Federal de Saúde Pública: Lei Federal nº 8.080/1990 e alterações. Lei Federal nº 8.142/1990 e alterações."
+                },
+                {
+                  "title": "Normas de organização e financiamento do SUS",
+                  "source": "Legislação e normas vigentes relacionadas à organização, ao funcionamento, ao financiamento, à participação e ao controle social do SUS."
+                },
+                {
+                  "title": "APS: conceitos, princípios e atributos",
+                  "source": "Atenção Primária à Saúde (APS): conceitos, princípios e atributos."
+                },
+                {
+                  "title": "Atenção Básica, PNAB e Saúde da Família",
+                  "source": "Atenção Básica. Política Nacional de Atenção Básica (PNAB). Estratégia Saúde da Família. Equipes e organização da Atenção Primária à Saúde."
+                },
+                {
+                  "title": "Territorialização e adscrição da população",
+                  "source": "Territorialização. Cadastramento e adscrição da população."
+                },
+                {
+                  "title": "Promoção da saúde e coordenação do cuidado",
+                  "source": "Ações de promoção, prevenção, proteção e recuperação da saúde. Coordenação do cuidado e ordenação das Redes de Atenção à Saúde."
+                },
+                {
+                  "title": "Vigilância em Saúde: organização e componentes",
+                  "source": "Vigilância em Saúde: conceitos, princípios e evolução da Vigilância em Saúde. Organização e atuação da Vigilância em Saúde nas três esferas de gestão do SUS. Componentes e elementos da Vigilância em Saúde. Vigilância Epidemiológica. Vigilância Sanitária. Vigilância em Saúde Ambiental. Vigilância em Saúde do Trabalhador."
+                },
+                {
+                  "title": "Vigilância de agravos, notificação e resposta",
+                  "source": "Vigilância de doenças, agravos e eventos de saúde pública. Notificação compulsória. Investigação epidemiológica. Monitoramento e resposta a surtos e epidemias. Sistemas de informação utilizados na Vigilância em Saúde."
+                },
+                {
+                  "title": "Vigilância Epidemiológica: atribuições e doenças",
+                  "source": "Vigilância Epidemiológica: conceitos, objetivos e atribuições. Vigilância epidemiológica das doenças transmissíveis. Vigilância epidemiológica das doenças e agravos não transmissíveis."
+                },
+                {
+                  "title": "Investigação de surtos, prevenção e imunização",
+                  "source": "Investigação de casos e surtos. Medidas de prevenção e controle. Imunização e vigilância das coberturas vacinais. Notificação compulsória de doenças, agravos e eventos de saúde pública."
+                },
+                {
+                  "title": "Vigilância Sanitária: riscos e fiscalização",
+                  "source": "Vigilância Sanitária: conceitos, objetivos e atribuições. Ações de prevenção e controle de riscos à saúde. Fiscalização, inspeção e monitoramento sanitário."
+                },
+                {
+                  "title": "Vigilância Ambiental: água e contaminantes",
+                  "source": "Vigilância em Saúde Ambiental: conceitos e campos de atuação. Vigilância de fatores ambientais relacionados à saúde. Qualidade da água para consumo humano. Vigilância de populações expostas a contaminantes ambientais. Doenças e agravos relacionados a fatores ambientais."
+                },
+                {
+                  "title": "Vigilância em Saúde do Trabalhador",
+                  "source": "Vigilância em Saúde do Trabalhador: conceitos, princípios e atribuições. Promoção e proteção da saúde dos trabalhadores. Investigação e notificação dos agravos relacionados ao trabalho. Prevenção e controle dos riscos e doenças relacionados aos processos e ambientes de trabalho."
+                },
+                {
+                  "title": "Epidemiologia: conceitos e níveis de prevenção",
+                  "source": "Epidemiologia: conceitos básicos, objetivos e aplicações. História natural das doenças e níveis de prevenção."
+                },
+                {
+                  "title": "Medidas de frequência e indicadores de saúde",
+                  "source": "Medidas de frequência e ocorrência de doenças e agravos. Indicadores de saúde. Incidência, prevalência, mortalidade e letalidade."
+                },
+                {
+                  "title": "Estudos epidemiológicos e avaliação de serviços",
+                  "source": "Tipos de estudos epidemiológicos. Vigilância epidemiológica e investigação de surtos. Avaliação de serviços e programas de saúde."
+                },
+                {
+                  "title": "Sistemas de Informação em Saúde",
+                  "source": "Sistemas de Informação em Saúde: conceitos, finalidade e utilização. Sistemas de informação de interesse para o SUS e para a Vigilância em Saúde. Registro, processamento, análise e utilização dos dados para o planejamento, monitoramento e avaliação das ações e serviços de saúde."
+                },
+                {
+                  "title": "Guia de Vigilância em Saúde",
+                  "source": "Documentos e normas técnicas do Ministério da Saúde: Guia de Vigilância em Saúde, 6ª edição revisada, e atualizações."
+                },
+                {
+                  "title": "Guia de vigilância de vírus respiratórios",
+                  "source": "Guia de Vigilância Integrada da Covid-19, Influenza e outros vírus respiratórios de importância em saúde pública e atualizações."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "especificos-enfermeiro",
+      "name": "Conhecimentos específicos - Enfermeiro",
+      "knowledge_type": "specific",
+      "applies_to_all": false,
+      "applicability": [
+        {
+          "option_ref": "enfermeiro-725",
+          "weight": null
+        }
+      ],
+      "subjects": [
+        {
+          "name": "Conhecimentos Específicos de Enfermagem",
+          "topics": [
+            {
+              "title": "Conhecimentos Específicos de Enfermagem",
+              "source": "Legislação profissional: Constituição Federal 1988, Título VIII - artigos de 194 a 200. Lei Orgânica da Saúde Lei Federal n º 8.080/1990, Lei Federal nº 8.142/1990 e Decreto Presidencial nº 7.508, de 28 de junho de 2011. Política Nacional de Humanização (PNH). Código de Ética e Lei do exercício profissional. Sistema Único de Saúde (SUS): evolução histórica da organização do sistema de saúde no Brasil e a construção do Sistema Único de Saúde (SUS) – princípios, diretrizes, estrutura, organização e arcabouço legal. Cenário epidemiológico do Brasil: transição demográfica e epidemiológica das DCNT e Agravos da Saúde. Ciência e tecnologia em saúde. Estrutura e funcionamento das instituições e suas relações com os serviços de saúde. Níveis progressivos de assistência à saúde. Políticas públicas do SUS para gestão de recursos físicos, financeiros, materiais e humanos. Sistema de planejamento do SUS: Planejamento estratégico e normativo. Direitos dos usuários do SUS. Participação e controle social. Ações e programas do SUS. Estudos e avaliação de indicadores de saúde: sistemas nacionais de informação para doenças transmissíveis e não transmissíveis. Vigilância em saúde. Legislações Federais de Saúde Pública: Lei Federal nº 8.080/1990. Portaria Federal nº 2.436/2017. Lei Federal nº 8.142/1990. Cuidados de Enfermagem: Teorias de Enfermagem. Cuidados com feridas, Assistência de Enfermagem à saúde da criança, da mulher. Doenças Crônicas Não Transmissíveis e Doenças Infecto Parasitárias. Sinais vitais. Semiologia e Semiotécnica de Enfermagem. Preparo, administração e cálculos de medicamentos. Vacinação e calendário vacinal. Cuidados com feridas, suturas, primeiros socorros: dados vitais, oxigenoterapia, sondagem gástrica, vesical, lavagem intestinal, gástrica, aplicações quentes e frias, massagens, observações de sinais e sintomas. Cuidados com o recém-nascido e prematuro, patologias do recém-nascido, noções de crescimento e desenvolvimento, assistência de enfermagem nas FVAS e nas IRAS, terapia de reintegração oral, assistência à criança desidratada e à criança desnutrida, parasitoses, doenças transmissíveis comuns na infância. Cuidados com o adulto, patologias crónicas, hipertensão arterial sistémica, diabetes, noções sobre oncologia, assistência à saúde do trabalhador (principalmente doenças profissionais). Biossegurança. Segurança do Paciente. Guia de Vigilância Epidemiológica - Covid-19.",
+              "units": [
+                {
+                  "title": "Legislação profissional: Constituição Federal 1988, Título VIII - artigos de 194 a 200",
+                  "source": "Legislação profissional: Constituição Federal 1988, Título VIII - artigos de 194 a 200."
+                },
+                {
+                  "title": "Lei Orgânica da Saúde Lei Federal n º 8.080/1990, Lei Federal nº 8.142/1990 e Decreto Presidencial nº 7.508, de 28 de junho de 2011",
+                  "source": "Lei Orgânica da Saúde Lei Federal n º 8.080/1990, Lei Federal nº 8.142/1990 e Decreto Presidencial nº 7.508, de 28 de junho de 2011."
+                },
+                {
+                  "title": "Política Nacional de Humanização (PNH)",
+                  "source": "Política Nacional de Humanização (PNH)."
+                },
+                {
+                  "title": "Código de Ética e Lei do exercício profissional",
+                  "source": "Código de Ética e Lei do exercício profissional."
+                },
+                {
+                  "title": "Sistema Único de Saúde (SUS)",
+                  "source": "Sistema Único de Saúde (SUS): evolução histórica da organização do sistema de saúde no Brasil e a construção do Sistema Único de Saúde (SUS) – princípios, diretrizes, estrutura, organização e arcabouço legal."
+                },
+                {
+                  "title": "Cenário epidemiológico do Brasil: transição demográfica e epidemiológica das DCNT e Agravos da Saúde",
+                  "source": "Cenário epidemiológico do Brasil: transição demográfica e epidemiológica das DCNT e Agravos da Saúde."
+                },
+                {
+                  "title": "Ciência e tecnologia em saúde",
+                  "source": "Ciência e tecnologia em saúde."
+                },
+                {
+                  "title": "Estrutura e funcionamento das instituições e suas relações com os serviços de saúde",
+                  "source": "Estrutura e funcionamento das instituições e suas relações com os serviços de saúde."
+                },
+                {
+                  "title": "Níveis progressivos de assistência à saúde",
+                  "source": "Níveis progressivos de assistência à saúde."
+                },
+                {
+                  "title": "Políticas públicas do SUS para gestão de recursos físicos, financeiros, materiais e humanos",
+                  "source": "Políticas públicas do SUS para gestão de recursos físicos, financeiros, materiais e humanos."
+                },
+                {
+                  "title": "Sistema de planejamento do SUS: Planejamento estratégico e normativo",
+                  "source": "Sistema de planejamento do SUS: Planejamento estratégico e normativo."
+                },
+                {
+                  "title": "Direitos dos usuários do SUS",
+                  "source": "Direitos dos usuários do SUS."
+                },
+                {
+                  "title": "Participação e controle social",
+                  "source": "Participação e controle social."
+                },
+                {
+                  "title": "Ações e programas do SUS",
+                  "source": "Ações e programas do SUS."
+                },
+                {
+                  "title": "Estudos e avaliação de indicadores de saúde: sistemas nacionais de informação para doenças transmissíveis e não transmissíveis",
+                  "source": "Estudos e avaliação de indicadores de saúde: sistemas nacionais de informação para doenças transmissíveis e não transmissíveis."
+                },
+                {
+                  "title": "Vigilância em saúde",
+                  "source": "Vigilância em saúde."
+                },
+                {
+                  "title": "Legislações Federais de Saúde Pública: Lei Federal nº 8.080/1990",
+                  "source": "Legislações Federais de Saúde Pública: Lei Federal nº 8.080/1990."
+                },
+                {
+                  "title": "Portaria Federal nº 2.436/2017",
+                  "source": "Portaria Federal nº 2.436/2017."
+                },
+                {
+                  "title": "Lei Federal nº 8.142/1990",
+                  "source": "Lei Federal nº 8.142/1990."
+                },
+                {
+                  "title": "Cuidados de Enfermagem: Teorias de Enfermagem",
+                  "source": "Cuidados de Enfermagem: Teorias de Enfermagem."
+                },
+                {
+                  "title": "Cuidados com feridas, Assistência de Enfermagem à saúde da criança, da mulher",
+                  "source": "Cuidados com feridas, Assistência de Enfermagem à saúde da criança, da mulher."
+                },
+                {
+                  "title": "Doenças Crônicas Não Transmissíveis e Doenças Infecto Parasitárias",
+                  "source": "Doenças Crônicas Não Transmissíveis e Doenças Infecto Parasitárias."
+                },
+                {
+                  "title": "Sinais vitais",
+                  "source": "Sinais vitais."
+                },
+                {
+                  "title": "Semiologia e Semiotécnica de Enfermagem",
+                  "source": "Semiologia e Semiotécnica de Enfermagem."
+                },
+                {
+                  "title": "Preparo, administração e cálculos de medicamentos",
+                  "source": "Preparo, administração e cálculos de medicamentos."
+                },
+                {
+                  "title": "Vacinação e calendário vacinal",
+                  "source": "Vacinação e calendário vacinal."
+                },
+                {
+                  "title": "Cuidados com feridas, suturas, primeiros socorros",
+                  "source": "Cuidados com feridas, suturas, primeiros socorros: dados vitais, oxigenoterapia, sondagem gástrica, vesical, lavagem intestinal, gástrica, aplicações quentes e frias, massagens, observações de sinais e sintomas."
+                },
+                {
+                  "title": "Cuidados com o recém-nascido e prematuro, patologias do recém-nascido, noções de crescimento e desenvolvimento, assistência de…",
+                  "source": "Cuidados com o recém-nascido e prematuro, patologias do recém-nascido, noções de crescimento e desenvolvimento, assistência de enfermagem nas FVAS e nas IRAS, terapia de reintegração oral, assistência à criança desidratada e à criança desnutrida, parasitoses, doenças transmissíveis comuns na infância."
+                },
+                {
+                  "title": "Cuidados com o adulto, patologias crónicas, hipertensão arterial sistémica, diabetes, noções sobre oncologia, assistência à saúde…",
+                  "source": "Cuidados com o adulto, patologias crónicas, hipertensão arterial sistémica, diabetes, noções sobre oncologia, assistência à saúde do trabalhador (principalmente doenças profissionais)."
+                },
+                {
+                  "title": "Biossegurança",
+                  "source": "Biossegurança."
+                },
+                {
+                  "title": "Segurança do Paciente",
+                  "source": "Segurança do Paciente."
+                },
+                {
+                  "title": "Guia de Vigilância Epidemiológica - Covid-19",
+                  "source": "Guia de Vigilância Epidemiológica - Covid-19."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    "Arquivo de teste preparado a partir do PDF ilovepdf_merged (1).pdf. Escopo restrito ao cargo 725, Enfermeiro - Área Urbana - Porto Velho. Não inclui os demais cargos do edital.",
+    "Fontes: Anexo IV, páginas 6 a 10 do anexo (páginas 72 a 76 do PDF unificado). Os cargos revogados 506, 507 e 508 não foram incluídos.",
+    "Preparação local para testar a importação, sem chamada a IA externa. Pesos não informados neste arquivo; confira o quadro de provas antes de usar para planejamento definitivo.",
+    "Uma unidade pode exigir várias sessões. O bloco de 25 minutos não significa conclusão de todo o conteúdo."
+  ]
+}

@@ -1,25 +1,32 @@
 # Studia
 
-Aplicação para organizar estudos para concursos. Você envia o PDF do edital, a IA extrai cargos, matérias e tópicos, você revisa o resultado e o sistema monta um cronograma com revisões espaçadas, que se ajusta conforme o desempenho em questões.
+Aplicação para organizar estudos para concursos. Você envia o PDF do edital, escolhe o cargo, a IA extrai as matérias e os tópicos daquele cargo, você confere o resultado e o sistema monta um plano diário com revisões espaçadas, ajustado pelo desempenho em questões.
+
+![Plano do dia no Studia](docs/screenshots/hoje.png)
 
 ## Funcionalidades
 
-- **Importação de edital com IA**: leitura do PDF pelo Gemini, com tentativa automática em modelos gratuitos do OpenRouter quando a primeira falha. Cada tentativa é validada e registrada, e o resultado sempre passa por uma tela de revisão antes de virar plano de estudos.
-- **Cronograma com revisões espaçadas**: intervalos fixos inspirados na curva de Ebbinghaus (1, 7, 16, 35 e 90 dias). O nível inicial em cada tópico define onde ele entra na sequência, e o desempenho em questões adianta ou atrasa as próximas revisões.
-- **Prioridade do dia**: quando o tempo não dá para tudo, primeiro vêm as revisões atrasadas, depois as do dia e por último o conteúdo novo, ordenado pelo peso da matéria no edital.
-- **Painel**: o que estudar hoje, calendário, metas, gráfico da semana e progresso por matéria.
-- **Pomodoro** integrado e registro de sessões de estudo.
-- **Vários editais** por conta: um fica ativo por vez, e os outros podem ser finalizados e reativados depois.
+- **Importação por cargo**: o PDF é processado em segundo plano (com OCR local para páginas digitalizadas), os cargos são identificados e só o conteúdo do cargo escolhido é analisado. Trechos originais ficam lado a lado para conferência, e lacunas encontradas pedem correção antes de liberar a importação.
+- **IA com alternativas**: Gemini primeiro, depois modelos gratuitos do OpenRouter. Também é possível usar a sua própria IA, copiando o prompt e colando a resposta JSON.
+- **Unidades de estudo**: blocos grandes do edital são divididos em unidades menores, com recortes literais que reproduzem o texto original.
+- **Plano diário**: distribui o tempo disponível entre revisões atrasadas, revisões do dia e conteúdo novo, em ordem de prioridade.
+- **Revisão espaçada**: intervalos inspirados na curva de Ebbinghaus (1, 7, 16, 35 e 90 dias) que avançam ou recuam conforme os acertos.
+- **Contas administradas**: sem cadastro aberto; administradores criam contas com senha temporária e troca obrigatória no primeiro acesso.
+- Pomodoro, metas semanais e histórico de sessões.
 
-A regra de negócio completa está em [docs/planejamento.md](docs/planejamento.md), e as decisões técnicas, em [docs/adr](docs/adr) e [docs/decisions](docs/decisions).
+| Edital por cargo | Planejamento |
+| --- | --- |
+| ![Edital](docs/screenshots/edital.png) | ![Planejamento](docs/screenshots/planejamento.png) |
+
+A regra de negócio original está em [docs/planejamento.md](docs/planejamento.md). Decisões técnicas ficam em [docs/adr](docs/adr) e [docs/decisions](docs/decisions), e as análises de cada etapa, em [docs/analises](docs/analises).
 
 ## Tecnologias
 
-- Frontend: React 19, TypeScript, Vite e Tailwind CSS
+- Frontend: React, TypeScript, Vite e Tailwind CSS
 - API: PHP com CodeIgniter 4 e Shield (autenticação)
-- Banco: PostgreSQL
-- IA: Google Gemini e OpenRouter
-- Infra: Docker Compose (Nginx, PHP-FPM e PostgreSQL)
+- Banco e fila de processamento: PostgreSQL
+- IA: Google Gemini e OpenRouter; OCR local para PDFs digitalizados
+- Infra: Docker Compose (Nginx, PHP-FPM, worker e PostgreSQL)
 
 ## Requisitos
 
@@ -99,6 +106,28 @@ rede. Para configurar uma instalação nova, consulte
 
 ## Comandos úteis
 
+### Administração de contas
+
+O cadastro público está desabilitado. Administradores encontram a opção
+**Usuários** no menu para criar uma conta informando o e-mail. O servidor gera
+uma senha temporária e uma mensagem para copiar e enviar à pessoa. Essa senha
+aparece apenas na criação, sem ser guardada em texto no banco ou na interface.
+O primeiro acesso exige trocar a senha antes de usar as demais funções.
+
+Para promover uma conta existente pelo terminal, use o comando do Shield:
+
+```powershell
+docker compose exec php php spark shield:user addgroup -e EMAIL_DA_CONTA -g admin
+```
+
+O teste HTTP `server/tests/api/admin-users.mjs` usa uma conta administrativa
+temporária criada por `php tests/api/admin-users-fixture.php setup` no serviço
+PHP. Ele verifica permissões, CSRF, convites, troca obrigatória e login com a
+nova senha. Ao terminar, execute `php tests/api/admin-users-fixture.php cleanup`
+no mesmo serviço, inclusive se o teste falhar. A fixture fica em
+`server/writable/testing/`, ignorada pelo Git. O teste de navegador correspondente
+é `server/tests/api/admin-users-browser.mjs` e usa um navegador isolado com CDP.
+
 ```powershell
 # Estado dos serviços
 docker compose ps
@@ -119,6 +148,44 @@ docker compose exec php php spark migrate
 Para também remover os dados locais do PostgreSQL, execute `docker compose down --volumes`. Esse comando apaga o banco deste projeto.
 
 ## Estrutura
+
+### Importar um edital por cargo
+
+Em **Editais > Novo edital**, envie o PDF, identifique os cargos e escolha o
+nome e código que deseja estudar. Depois, analise apenas o conteúdo aplicável,
+confira os trechos originais e confirme a importação. A seleção e o rascunho
+podem ser retomados pela lista de editais.
+
+Com Gemini ou OpenRouter configurados, as duas análises podem ser feitas no
+sistema. A opção de usar sua própria IA gera um prompt por etapa e recebe o
+JSON correspondente. Falhas da API não removem o rascunho. A importação de JSON
+completo continua em **Já tenho uma resposta JSON completa**.
+
+Confira as páginas e o final dos conteúdos gerais e específicos antes de
+importar. A IA pode omitir trechos, mesmo quando a resposta passa na validação.
+Após importar, **Organizar estudos** permite dividir os blocos em unidades menores.
+Se aparecerem trechos pendentes, use **Corrigir trechos pendentes**. O sistema
+preserva os blocos encontrados e confere novamente antes de liberar a importação.
+Quando um trecho pertencer a outro cargo, registre a decisão e o motivo na revisão.
+O andamento das próximas etapas está no [plano do PDF aos estudos](docs/analises/2026-10-18-plano-pdf-para-estudos.md).
+O upload principal processa o arquivo em segundo plano pelo serviço `worker`.
+Páginas digitalizadas passam por OCR local em português e inglês. É possível
+cancelar e retomar; as páginas reconhecidas ficam em cache. Os limites são
+15 MB, 200 páginas, dez minutos por rodada de leitura e prazo por página.
+Resultados reconhecidos de imagens precisam de conferência no PDF original.
+Retificações e documentos sem programa claramente identificado pedem confirmação
+do conjunto de arquivos. As unidades são divididas localmente com recortes
+literais, e sua concatenação precisa reproduzir a fonte completa.
+
+Ao atualizar uma instalação existente, reconstrua `php` e inicie também `worker`.
+Para consultar a fila: `docker compose logs --tail 50 worker`. A fila reside no
+PostgreSQL e preserva trabalhos interrompidos para retomada explícita. O comando
+`php spark imports:work --once` processa no máximo um trabalho para diagnóstico.
+Detalhes e resultados: [teste da importação por cargo](docs/analises/2026-10-18-importacao-por-cargo.md).
+
+O layout Mesa de estudo usa os tokens semânticos de `app/src/index.css` e os
+componentes visuais de `app/src/styles/mesa.css`. A decisão e o escopo estão em
+[0004-layout-mesa-de-estudo.md](docs/adr/0004-layout-mesa-de-estudo.md).
 
 - `app/`: frontend React e Vite
 - `server/`: API CodeIgniter 4 e Shield

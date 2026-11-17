@@ -6,10 +6,14 @@ RUN apk add --no-cache \
         libzip-dev \
         oniguruma-dev \
         poppler-utils \
+        tesseract-ocr \
+        tesseract-ocr-data-por \
+        tesseract-ocr-data-eng \
         postgresql-dev \
     && docker-php-ext-install -j"$(nproc)" intl mbstring pgsql pdo_pgsql zip
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN apk add --no-cache font-dejavu
 COPY docker/php/entrypoint.sh /usr/local/bin/studia-entrypoint
 
 RUN chmod +x /usr/local/bin/studia-entrypoint \

@@ -18,7 +18,7 @@ final class GeminiEditalExtractor
         $this->config = Closure::fromCallable($config ?? static fn(string $name, mixed $default) => env($name, $default));
     }
 
-    public function extract(string $text, float $deadline, int $attemptTimeout): array
+    public function extract(string $text, float $deadline, int $attemptTimeout, ?array $task = null): array
     {
         $key = trim((string) ($this->config)('GEMINI_API', ''));
         if ($key === '') throw new OpenRouterExtractionException('GEMINI_API não configurada.', []);
@@ -29,11 +29,13 @@ final class GeminiEditalExtractor
         $started = ($this->clock)();
         $remaining = min((float) $attemptTimeout, $deadline - $started);
         if ($remaining <= 0) throw new OpenRouterExtractionException('O prazo total da importação foi atingido.', []);
-        $messages = (new EditalPromptBuilder())->build($text);
-        $messages[0]['content'] .= "\nJSON Schema obrigatório: " . json_encode(EditalJsonSchema::build()['schema'], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        $schema = $task['schema'] ?? EditalJsonSchema::build();
+        $messages = $task['messages'] ?? (new EditalPromptBuilder())->build($text);
+        $messages[0]['content'] .= "\nJSON Schema obrigatório: " . json_encode($schema['schema'], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
         $payload = ['model' => $model, 'messages' => $messages,
-            'max_tokens' => max(1, min(65536, (int) ($this->config)('OPENROUTER_MAX_TOKENS', 50000))),
-            'response_format' => ['type' => 'json_schema', 'json_schema' => EditalJsonSchema::build()]];
+            'max_tokens' => max(1, min(65536, $task['max_tokens'] ?? 65536, (int) ($this->config)('OPENROUTER_MAX_TOKENS', 50000))),
+            'response_format' => ['type' => 'json_schema', 'json_schema' => $schema]];
+        if ($task) $payload['reasoning_effort'] = 'low';
         $remaining = min((float) $attemptTimeout, $deadline - ($this->clock)());
         if ($remaining <= 0) throw new OpenRouterExtractionException('O prazo total da importação foi atingido.', []);
         $response = ($this->transport)('POST', 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
@@ -63,7 +65,7 @@ final class GeminiEditalExtractor
             if (is_string($output) && trim($output) !== '') {
                 try {
                     $parsed = json_decode((string) preg_replace('/^```(?:json)?\s*|\s*```$/i', '', trim($output)), true, 512, JSON_THROW_ON_ERROR);
-                    $result = (new EditalStructureValidator())->validateAutomatic($parsed);
+                    $result = $task ? ($task['validate'])($parsed) : (new EditalStructureValidator())->validateAutomatic($parsed);
                     $reason = 'success';
                 } catch (JsonException) {
                     $reason = 'invalid_json';

@@ -6,7 +6,12 @@ use Throwable;
 
 final class NoticesController extends ApiController
 {
-    public function index() { return $this->respond((new NoticeModel())->select('id,title,status,source,original_filename,created_at,confirmed_at')->where('user_id',$this->userId())->orderBy('id','DESC')->findAll()); }
+    public function importCapabilities() { return $this->respond(['pdfAvailable' => trim((string) env('GEMINI_API', '')) !== '' || trim((string) env('OPENROUTER_API_KEY', '')) !== '', 'maxBytes' => 15 * 1024 * 1024]); }
+    public function index() {
+        $rows=(new NoticeModel())->select("id,title,status,source,original_filename,created_at,confirmed_at,extraction_error,updated_at,EXISTS (SELECT 1 FROM notice_import_drafts d WHERE d.notice_id=notices.id AND d.status <> 'applied') AS job_import_pending",false)->where('user_id',$this->userId())->orderBy('id','DESC')->findAll();
+        foreach($rows as &$row)$row['job_import_pending']=\App\Services\DailyStudyData::boolean($row['job_import_pending']);
+        return $this->respond($rows);
+    }
     public function delete($id=null) {
         $model=new NoticeModel();
         if(!$model->where(['id'=>$id,'user_id'=>$this->userId()])->first())return $this->failNotFound();
@@ -15,15 +20,20 @@ final class NoticesController extends ApiController
     }
     public function show($id=null) {
         $notice=(new NoticeModel())->where(['id'=>$id,'user_id'=>$this->userId()])->first(); if(!$notice)return $this->failNotFound();
-        $subjects=(new SubjectModel())->where('notice_id',$id)->orderBy('sort_order')->findAll(); $tm=new TopicModel();
-        foreach($subjects as &$s)$s['topics']=$tm->where('subject_id',$s['id'])->orderBy('sort_order')->findAll();
-        $notice['subjects']=$subjects; return $this->respond($notice);
+        $subjects=(new SubjectModel())->where('notice_id',$id)->orderBy('sort_order')->orderBy('id')->findAll(); $tm=new TopicModel();
+        foreach($subjects as &$s)$s['topics']=$tm->where('subject_id',$s['id'])->orderBy('sort_order')->orderBy('id')->findAll();
+        $notice['subjects']=$subjects; $notice['job_import_pending']=db_connect()->table('notice_import_drafts')->where('notice_id',$id)->where('status !=','applied')->countAllResults()>0; return $this->respond($notice);
     }
     public function create() {
         $data=$this->body();
         if(!is_string($data['title']??null)||trim($data['title'])===''||mb_strlen(trim($data['title']))>180)return $this->failValidationErrors('Informe um nome com até 180 caracteres.');
         if(!in_array($data['source']??'manual',['manual','pdf','text'],true))return $this->failValidationErrors('Origem inválida.');
-        $id=(new NoticeModel())->insert(['user_id'=>$this->userId(),'title'=>trim($data['title']),'source'=>$data['source']??'manual','status'=>'draft'],true);
+        $key=$data['request_key']??null;
+        if($key!==null && (!is_string($key)||!preg_match('/^[a-zA-Z0-9-]{16,64}$/',$key)))return $this->failValidationErrors('Identificador da importação inválido.');
+        $db=db_connect();$db->transStart();$db->query('SELECT pg_advisory_xact_lock(?)',[$this->userId()]);
+        if($key){$existing=(new NoticeModel())->withDeleted()->where(['user_id'=>$this->userId(),'import_request_key'=>$key])->first();if($existing){$db->transComplete();if($existing['deleted_at'])return $this->failResourceExists('Este rascunho foi removido. Escolha Começar outra importação.');return $this->respondCreated(['id'=>$existing['id'],'repeated'=>true]);}}
+        $id=(new NoticeModel())->insert(['user_id'=>$this->userId(),'title'=>trim($data['title']),'source'=>$data['source']??'manual','status'=>'draft','import_request_key'=>$key],true);
+        $db->transComplete();
         return $this->respondCreated(['id'=>$id]);
     }
     public function update($id=null) {
@@ -40,6 +50,7 @@ final class NoticesController extends ApiController
         $options=(new SelectableOptionModel())->where('notice_id',$id)->findAll();
         if($options!==[]&&!array_filter($options,static fn(array $option):bool=>in_array($option['is_selected'],[true,1,'1','t','true'],true)))return $this->failValidationErrors('Selecione pelo menos uma opção de cargo, perfil ou especialidade.');
         $db=db_connect(); $db->transException(true)->transStart();
+        $db->query('SELECT pg_advisory_xact_lock(?)', [$this->userId()]);
         $m->where('user_id',$this->userId())->where('id !=',$id)->where('status','confirmed')->set(['status'=>'inactive'])->update();
         $m->update($id,['status'=>'confirmed','confirmed_at'=>date('Y-m-d H:i:s')]);
         $db->transComplete(); return $this->respond(['status'=>'confirmed']);
@@ -59,6 +70,8 @@ final class NoticesController extends ApiController
     }
     public function extract($id) {
         $nm=new NoticeModel(); $notice=$nm->where(['id'=>$id,'user_id'=>$this->userId()])->first(); if(!$notice)return $this->failNotFound();
+        if(db_connect()->table('subjects')->where('notice_id',$id)->countAllResults()>0)return $this->fail('Este edital já possui conteúdo. Use Organizar estudos ou importe outro edital. O histórico foi preservado.',409);
+        if($notice['status']==='processing' && strtotime($notice['updated_at'].' UTC')>time()-600)return $this->fail('A leitura deste edital ainda está em andamento. Aguarde antes de tentar novamente.',409);
         $text=trim((string)($this->request->getPost('text')??'')); $file=$this->request->getFile('file');
         $attempts=[]; $transaction=false; $db=db_connect(); $startedAt=date('Y-m-d H:i:s');
         try {
@@ -78,6 +91,7 @@ final class NoticesController extends ApiController
             return $this->respond(['status'=>'extracted','model'=>$result['model'],'attempts'=>$attempts]);
         } catch(Throwable $e) {
             if($transaction)$db->transRollback();
+            if(db_connect()->table('subjects')->where('notice_id',$id)->countAllResults()>0)return $this->fail('O edital já recebeu conteúdo em outra solicitação. Recarregue a lista de editais. O histórico foi preservado.',409);
             if($e instanceof OpenRouterExtractionException)$attempts=$e->getAttempts();
             $message=$e instanceof \RuntimeException && !$transaction ? $e->getMessage() : 'Não foi possível concluir a importação. Tente novamente.';
             $nm->update($id,['status'=>'failed','extraction_error'=>$message]);
@@ -89,6 +103,8 @@ final class NoticesController extends ApiController
 
     public function importResponse($id) {
         $nm=new NoticeModel(); $notice=$nm->where(['id'=>$id,'user_id'=>$this->userId()])->first(); if(!$notice)return $this->failNotFound();
+        if($notice['status']==='processing' && strtotime($notice['updated_at'].' UTC')>time()-600)return $this->fail('A leitura deste edital ainda está em andamento. Aguarde antes de importar outra resposta.',409);
+        if(db_connect()->table('subjects')->where('notice_id',$id)->countAllResults()>0)return $this->failValidationErrors('Este edital já possui conteúdo. Use Organizar estudos para preservar seu histórico.');
         $response=trim((string)($this->body()['response']??''));
         if($response==='')return $this->failValidationErrors('Cole a resposta JSON antes de importar.');
         if(strlen($response)>1024*1024)return $this->failValidationErrors('A resposta deve ter no máximo 1 MB.');
@@ -101,8 +117,6 @@ final class NoticesController extends ApiController
     }
 
     private function replaceStructure(int $noticeId,array $structure): void {
-        $om=new SelectableOptionModel();$gm=new ContentGroupModel();$sm=new SubjectModel();$tm=new TopicModel();$om->where('notice_id',$noticeId)->delete();$gm->where('notice_id',$noticeId)->delete();(new StudyAreaModel())->where('notice_id',$noticeId)->delete();$optionIds=[];
-        foreach($structure['options'] as $i=>$option)$optionIds[$option['ref']]=$om->insert(['notice_id'=>$noticeId,'external_ref'=>$option['ref'],'code'=>$option['code'],'name'=>$option['name'],'kind'=>$option['kind'],'is_selected'=>false,'sort_order'=>$i],true);
-        $db=db_connect();$subjectOrder=0;foreach($structure['groups'] as $gi=>$group){$gid=$gm->insert(['notice_id'=>$noticeId,'external_ref'=>$group['ref'],'name'=>$group['name'],'knowledge_type'=>$group['knowledge_type'],'applies_to_all'=>$group['applies_to_all'],'sort_order'=>$gi],true);foreach($group['applicability'] as $application)$db->table('option_content_groups')->insert(['option_id'=>$optionIds[$application['option_ref']],'content_group_id'=>$gid,'weight'=>$application['weight']]);foreach($group['subjects'] as $subject){$sid=$sm->insert(['notice_id'=>$noticeId,'content_group_id'=>$gid,'name'=>$subject['name'],'weight'=>1,'color'=>($subjectOrder%6)+1,'sort_order'=>$subjectOrder++],true);foreach($subject['topics'] as $ti=>$topic)$tm->insert(['subject_id'=>$sid,'name'=>$topic,'sort_order'=>$ti]);}}
+        (new \App\Services\NoticeStructureWriter())->replace($noticeId, $this->userId(), $structure);
     }
 }

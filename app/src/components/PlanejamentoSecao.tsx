@@ -48,18 +48,19 @@ export default function PlanejamentoSecao() {
       Math.max(MARGEM_TELA, e.clientX),
       window.innerWidth - LARGURA_POPOVER - MARGEM_TELA,
     )
-    const topo = Math.min(e.clientY, window.innerHeight - 80)
+    const altura = Math.min(420, window.innerHeight - MARGEM_TELA * 2)
+    const topo = Math.max(MARGEM_TELA, Math.min(e.clientY, window.innerHeight - altura - MARGEM_TELA))
     setPopover({ materia, minutos, top: topo, left: esquerda })
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-navy-900 p-4">
+    <div className="rounded-lg border border-line bg-surface p-4">
       <div className="mb-4">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-muted">
           <IconSchedule className="h-4 w-4" />
           Planejamento semanal
         </h2>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-muted">
           Sugestão de como distribuir o tempo disponível de cada dia entre as matérias, proporcional à
           importância delas. Clique numa matéria pra ver quais tópicos focar.
         </p>
@@ -70,14 +71,14 @@ export default function PlanejamentoSecao() {
           const horas = disponibilidade[chave]
           const alocacoes = alocarDia(horas, materias)
           return (
-            <div key={chave} className="rounded-xl bg-navy-850 p-4">
+            <div key={chave} className="rounded-md bg-soft p-4">
               <div className="mb-3 flex items-center justify-between">
-                <p className="font-semibold text-white">{label}</p>
-                <span className="text-xs text-slate-500">{horas}h disponíveis</span>
+                <p className="font-semibold text-ink">{label}</p>
+                <span className="text-xs text-muted">{horas}h disponíveis</span>
               </div>
 
               {alocacoes.length === 0 ? (
-                <p className="text-sm text-slate-500">Sem tempo disponível.</p>
+                <p className="text-sm text-muted">Sem tempo disponível.</p>
               ) : (
                 <ul className="flex flex-col gap-2">
                   {alocacoes.map(({ materia, minutos }: AlocacaoMateria) => {
@@ -87,13 +88,13 @@ export default function PlanejamentoSecao() {
                         <button
                           type="button"
                           onClick={(e) => abrirTopicos(e, materia, minutos)}
-                          className="flex w-full items-center justify-between gap-2 rounded-lg border border-white/10 bg-navy-900 px-3 py-2 text-left transition-colors hover:border-white/20 hover:bg-navy-800"
+                          className="flex w-full items-center justify-between gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-left transition-colors hover:border-line hover:bg-hover"
                         >
                           <span className="flex min-w-0 items-center gap-2">
                             <span className={`h-2 w-2 shrink-0 rounded-full ${estilo.dot}`} />
-                            <span className="truncate text-sm text-slate-200">{materia.nome}</span>
+                            <span className="truncate text-sm text-ink">{materia.nome}</span>
                           </span>
-                          <span className="shrink-0 whitespace-nowrap text-xs text-slate-400">
+                          <span className="shrink-0 whitespace-nowrap text-xs text-muted">
                             {formatarMinutos(minutos)}
                           </span>
                         </button>
@@ -109,17 +110,17 @@ export default function PlanejamentoSecao() {
 
       {materiaSelecionada && (
         <Modal titulo={materiaSelecionada.materia.nome} onFechar={() => setMateriaSelecionada(null)}>
-          <p className="mb-3 text-sm text-slate-400">
+          <p className="mb-3 text-sm text-muted">
             {formatarMinutos(materiaSelecionada.minutos)} sugeridos, priorizando os tópicos mais difíceis.
           </p>
           <ul className="flex flex-col gap-2">
             {alocarTopicos(materiaSelecionada.materia, materiaSelecionada.minutos).map((t) => (
               <li
                 key={t.topicoId}
-                className="flex items-center justify-between rounded-lg bg-navy-850 px-3 py-2 text-sm"
+                className="flex items-center justify-between rounded-lg bg-soft px-3 py-2 text-sm"
               >
-                <span className="text-slate-200">{t.nome}</span>
-                <span className="text-slate-400">{formatarMinutos(t.minutos)}</span>
+                <span className="text-ink">{t.nome}</span>
+                <span className="text-muted">{formatarMinutos(t.minutos)}</span>
               </li>
             ))}
           </ul>
@@ -130,31 +131,31 @@ export default function PlanejamentoSecao() {
         <>
           <div className="fixed inset-0 z-40" onClick={() => setPopover(null)} />
           <div
-            className="animate-modal fixed z-50 flex max-h-[70vh] w-72 flex-col rounded-2xl border border-white/10 bg-navy-900 p-4 shadow-2xl shadow-black/40"
+            className="planning-topic-popover animate-modal fixed z-50 flex w-72 flex-col rounded-lg border border-line bg-surface p-4 shadow-2xl shadow-black/40"
             style={{ top: popover.top, left: popover.left }}
           >
             <div className="mb-2 flex shrink-0 items-center justify-between gap-2">
-              <p className="truncate font-semibold text-white">{popover.materia.nome}</p>
+              <p className="truncate font-semibold text-ink">{popover.materia.nome}</p>
               <button
                 type="button"
                 onClick={() => setPopover(null)}
                 aria-label="Fechar"
-                className="shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:bg-navy-800 hover:text-white"
+                className="shrink-0 rounded-lg p-1 text-muted transition-colors hover:bg-hover hover:text-ink"
               >
                 ✕
               </button>
             </div>
-            <p className="mb-3 shrink-0 text-xs text-slate-400">
+            <p className="mb-3 shrink-0 text-xs text-muted">
               {formatarMinutos(popover.minutos)} sugeridos, priorizando os tópicos mais difíceis.
             </p>
             <ul className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
               {alocarTopicos(popover.materia, popover.minutos).map((t) => (
                 <li
                   key={t.topicoId}
-                  className="flex items-center justify-between gap-2 rounded-lg bg-navy-850 px-3 py-2 text-sm"
+                  className="flex items-center justify-between gap-2 rounded-lg bg-soft px-3 py-2 text-sm"
                 >
-                  <span className="min-w-0 truncate text-slate-200">{t.nome}</span>
-                  <span className="shrink-0 text-slate-400">{formatarMinutos(t.minutos)}</span>
+                  <span className="min-w-0 truncate text-ink">{t.nome}</span>
+                  <span className="shrink-0 text-muted">{formatarMinutos(t.minutos)}</span>
                 </li>
               ))}
             </ul>

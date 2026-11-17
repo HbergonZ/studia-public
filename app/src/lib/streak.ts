@@ -1,11 +1,12 @@
+import { dataLocal, lerData } from './datas'
 import type { Sessao } from '../types'
 
 export function chaveDia(data: Date) {
-  return data.toISOString().slice(0, 10)
+  return dataLocal(data)
 }
 
 export function diasEstudadosDe(sessoes: Sessao[]): Set<string> {
-  return new Set(sessoes.map((s) => chaveDia(new Date(s.data))))
+  return new Set(sessoes.map((s) => chaveDia(lerData(s.data))))
 }
 
 export function calcularStreak(diasEstudados: Set<string>, hoje: Date): number {

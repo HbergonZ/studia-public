@@ -61,6 +61,29 @@ final class OpenRouterEditalExtractorTest extends CIUnitTestCase
         $this->assertSame(['truncated', 'invalid_structure', 'success'], array_column($result['attempts'], 'reason'));
     }
 
+    public function testScopedTaskRepairsOnceWithValidationFeedback(): void
+    {
+        $task = ['max_tokens' => 1000,
+            'messages' => [['role' => 'user', 'content' => 'Locate the selected job in numbered lines.']],
+            'schema' => ['name' => 'location', 'schema' => ['type' => 'object']],
+            'validate' => static function (array $value): array {
+                if (($value['start'] ?? 0) > ($value['end'] ?? 0)) {
+                    throw new \RuntimeException('Invalid range: start exceeds end.');
+                }
+                return $value;
+            }];
+        $result = $this->extractor([
+            $this->response('vendor/a:free', ['start' => 8, 'end' => 2]),
+            $this->response('vendor/a:free', ['start' => 2, 'end' => 8]),
+        ])->extract('Document', null, 2, $task);
+        $this->assertSame(['invalid_structure', 'success'], array_column($result['attempts'], 'reason'));
+        $this->assertSame('vendor/a:free', $this->calls[2]['payload']['model']);
+        $this->assertSame('assistant', $this->calls[2]['payload']['messages'][1]['role']);
+        $this->assertStringContainsString('Invalid range: start exceeds end.', $this->calls[2]['payload']['messages'][2]['content']);
+        $this->assertSame(1000, $this->calls[2]['payload']['max_tokens']);
+        $this->assertSame(['start' => 2, 'end' => 8], $result['structure']);
+    }
+
     public function testExcludesChargedRouterAndSmallContextModels(): void
     {
         $models = [$this->model('vendor/paid', ['pricing' => ['request' => '.001']]), $this->model('openrouter/free'),

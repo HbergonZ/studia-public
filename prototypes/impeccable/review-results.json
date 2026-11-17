@@ -1,0 +1,24 @@
+{
+  "result": "PASS",
+  "layouts": 3,
+  "screens": 3,
+  "widths": [
+    1440,
+    390,
+    320
+  ],
+  "checks": [
+    "navigation",
+    "no horizontal overflow",
+    "named buttons",
+    "51 job options",
+    "accent-insensitive search",
+    "multi-job scope",
+    "internal scrolling",
+    "time budget validation",
+    "timer",
+    "continuation versus completion",
+    "empty calendar day"
+  ],
+  "javascriptErrors": []
+}

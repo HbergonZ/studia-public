@@ -20,12 +20,13 @@ final class OpenRouterEditalExtractor
         $this->config = Closure::fromCallable($config ?? static fn(string $name, mixed $default) => env($name, $default));
     }
 
-    public function extract(string $text, ?float $deadline = null, ?int $attemptLimit = null): array
+    public function extract(string $text, ?float $deadline = null, ?int $attemptLimit = null, ?array $task = null): array
     {
         $deadline ??= ($this->clock)() + $this->integer('OPENROUTER_TOTAL_TIMEOUT_SECONDS', 300, 1, 540);
         $attemptTimeout = min($this->integer('OPENROUTER_ATTEMPT_TIMEOUT_SECONDS', 90, 1, 600), $this->integer('OPENROUTER_TIMEOUT_SECONDS', 600, 1, 600));
         $maxAttempts = $attemptLimit ?? $this->integer('OPENROUTER_MAX_ATTEMPTS', 4, 1, 20);
         $maxTokens = $this->integer('OPENROUTER_MAX_TOKENS', 50000, 1, 200000);
+        if ($task) $maxTokens = min($maxTokens, $task['max_tokens']);
         $key = trim((string) ($this->config)('OPENROUTER_API_KEY', ''));
         if ($key === '') {
             throw new OpenRouterExtractionException('OPENROUTER_API_KEY não configurada.', []);
@@ -34,12 +35,13 @@ final class OpenRouterEditalExtractor
         if (!filter_var($url, FILTER_VALIDATE_URL) || parse_url($url, PHP_URL_SCHEME) !== 'https' || !str_ends_with($url, '/chat/completions')) {
             throw new OpenRouterExtractionException('OPENROUTER_BASE_URL deve ser uma URL HTTPS terminada em /chat/completions.', []);
         }
-        $messages = (new EditalPromptBuilder())->build($text);
-        $messages[0]['content'] .= "\nJSON Schema obrigatório: " . json_encode(EditalJsonSchema::build()['schema'], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        $schema = $task['schema'] ?? EditalJsonSchema::build();
+        $messages = $task['messages'] ?? (new EditalPromptBuilder())->build($text);
+        $messages[0]['content'] .= "\nJSON Schema obrigatório: " . json_encode($schema['schema'], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
         // Estimate Portuguese document tokens with two UTF-8 bytes per token plus framing.
         // The provider still checks its tokenizer; never truncate the source to fit.
         $inputTokens = (int) ceil((strlen(json_encode($messages, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE))
-            + strlen(json_encode(EditalJsonSchema::build(), JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE))) / 2) + 512;
+            + strlen(json_encode($schema, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE))) / 2) + 512;
         $headers = ['Authorization: Bearer ' . $key, 'Content-Type: application/json', 'X-OpenRouter-Title: Studia'];
         $catalog = $this->call('GET', substr($url, 0, -strlen('/chat/completions')) . '/models', $headers, null, $deadline, $attemptTimeout);
         if ($catalog['status'] !== 200 || !empty($catalog['error'])) {
@@ -51,7 +53,10 @@ final class OpenRouterEditalExtractor
             throw new OpenRouterExtractionException('Nenhum modelo gratuito disponível suporta o tamanho do edital e o formato necessário.', []);
         }
         $attempts = [];
-        foreach ($models as $id => $model) {
+        $queue = [];
+        foreach ($models as $id => $model) $queue[] = ['id' => $id, 'model' => $model, 'correction' => null];
+        while ($candidate = array_shift($queue)) {
+            $id = $candidate['id']; $model = $candidate['model'];
             if (count($attempts) >= $maxAttempts || ($this->clock)() >= $deadline) {
                 break;
             }
@@ -60,9 +65,13 @@ final class OpenRouterEditalExtractor
                 'model' => $id, 'max_tokens' => $model['output_tokens'],
                 'provider' => ['require_parameters' => true, 'max_price' => ['prompt' => 0, 'completion' => 0]],
                 'response_format' => in_array('structured_outputs', $model['supported_parameters'], true)
-                    ? ['type' => 'json_schema', 'json_schema' => EditalJsonSchema::build()] : ['type' => 'json_object'],
+                    ? ['type' => 'json_schema', 'json_schema' => $schema] : ['type' => 'json_object'],
                 'messages' => $messages,
             ];
+            if ($candidate['correction'] !== null) {
+                $payload['messages'][] = ['role' => 'assistant', 'content' => $candidate['correction']['response']];
+                $payload['messages'][] = ['role' => 'user', 'content' => 'Corrija o JSON anterior sem alterar os textos nem as referências do documento. Erro de validação: ' . $candidate['correction']['error'] . ' Confira cada start_line <= end_line, o cargo escolhido, as páginas, a cobertura e o schema. Retorne o objeto completo corrigido.'];
+            }
             $reasoning = $model['reasoning'];
             if (in_array('reasoning', $model['supported_parameters'], true)
                 && ($reasoning['mandatory'] ?? null) !== true
@@ -111,13 +120,13 @@ final class OpenRouterEditalExtractor
                 if (is_string($output) && trim($output) !== '') {
                     try {
                         $parsed = json_decode((string) preg_replace('/^```(?:json)?\s*|\s*```$/i', '', trim($output)), true, 512, JSON_THROW_ON_ERROR);
-                        $result = (new EditalStructureValidator())->validateAutomatic($parsed);
+                        $result = $task ? ($task['validate'])($parsed) : (new EditalStructureValidator())->validateAutomatic($parsed);
                         $reason = 'success';
                     } catch (JsonException) {
                         $reason = 'invalid_json';
                     } catch (RuntimeException $error) {
                         $reason = 'invalid_structure';
-                        $validationError = $this->safeValidationError($error->getMessage());
+                        $validationError = $task ? $error->getMessage() : $this->safeValidationError($error->getMessage());
                     }
                 }
             }
@@ -134,6 +143,9 @@ final class OpenRouterEditalExtractor
             }
             if ($result !== null) {
                 return ['request_id' => $raw['id'] ?? null, 'model' => $raw['model'], 'structure' => $result, 'raw' => $raw, 'attempts' => $attempts];
+            }
+            if ($task && $reason === 'invalid_structure' && $candidate['correction'] === null && count($attempts) < $maxAttempts) {
+                array_unshift($queue, ['id' => $id, 'model' => $model, 'correction' => ['response' => $output, 'error' => $validationError]]);
             }
             if ($fatal) {
                 break;

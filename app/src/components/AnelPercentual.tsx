@@ -4,7 +4,7 @@ interface AnelPercentualProps {
   cor?: string
 }
 
-export default function AnelPercentual({ valor, tamanho = 40, cor = 'var(--color-brand-400)' }: AnelPercentualProps) {
+export default function AnelPercentual({ valor, tamanho = 48, cor = 'var(--color-brand-400)' }: AnelPercentualProps) {
   const espessura = Math.max(3, Math.round(tamanho * 0.1))
   const raio = (tamanho - espessura) / 2
   const centro = tamanho / 2
@@ -15,7 +15,7 @@ export default function AnelPercentual({ valor, tamanho = 40, cor = 'var(--color
   return (
     <div className="relative inline-flex shrink-0 items-center justify-center" style={{ width: tamanho, height: tamanho }}>
       <svg width={tamanho} height={tamanho} viewBox={`0 0 ${tamanho} ${tamanho}`} className="-rotate-90">
-        <circle cx={centro} cy={centro} r={raio} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={espessura} />
+        <circle cx={centro} cy={centro} r={raio} fill="none" stroke="var(--color-line)" strokeWidth={espessura} />
         <circle
           cx={centro}
           cy={centro}
@@ -29,7 +29,7 @@ export default function AnelPercentual({ valor, tamanho = 40, cor = 'var(--color
           className="transition-[stroke-dashoffset] duration-700 ease-out"
         />
       </svg>
-      <span className="absolute text-[10px] font-semibold text-white">{Math.round(valor)}%</span>
+      <span className="absolute text-xs font-semibold text-ink">{Math.round(valor)}%</span>
     </div>
   )
 }

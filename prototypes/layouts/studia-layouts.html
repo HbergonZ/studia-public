@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Três propostas de layout para o Studia, com dados fictícios e navegação de demonstração.">
+  <title>Studia | Estudo de layouts</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&family=Manrope:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap');
+
+:root{font-family:'Public Sans','Segoe UI',sans-serif;color:#25382f;background:#edf0ed;font-synthesis:none;font-size:14px;line-height:1.5}
+*{box-sizing:border-box}
+body{margin:0}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button,a,input,select,textarea{outline-offset:4px}
+:focus-visible{outline:3px solid #4e83b4}
+button{color:inherit}
+button:disabled{cursor:default;opacity:.55}
+button .icon{flex-shrink:0}
+button{touch-action:manipulation}
+input,select,textarea{max-width:100%}
+::selection{background:#d2e3d7;color:#21372b}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-weight:600}
+.icon{width:20px;height:20px;display:inline-block;vertical-align:middle;flex-shrink:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip-link{position:fixed;top:-100px;left:20px;z-index:20;background:#fff;color:#183d64;padding:12px}
+.skip-link:focus{top:8px}
+.review-bar{min-height:78px;padding:14px 30px;display:flex;align-items:center;justify-content:space-between;gap:20px;background:#fff;border-bottom:1px solid #dce1df;position:relative;z-index:3;color:#35423d}
+.review-title{display:flex;gap:13px;align-items:center;white-space:nowrap;font-size:12px}
+.review-title strong{font-size:17px;letter-spacing:-.6px}
+.review-title span{padding-left:13px;border-left:1px solid #d7dcd9;color:#68746e}
+.layout-options{display:flex;gap:4px;padding:4px;border-radius:8px;background:#f0f2f1}
+.layout-options button{border:0;background:transparent;border-radius:5px;font-size:12px;font-weight:500;min-height:36px;padding:8px 17px;white-space:nowrap}
+.layout-options button[aria-pressed=true]{background:#fff;box-shadow:0 1px 4px #24382b16;color:#1d3529}
+.layout-options button:hover{background:#ffffffaa}
+.review-tools{display:flex;align-items:center;gap:15px;font-size:11px;white-space:nowrap}
+.demo-tag{display:flex;gap:7px;align-items:center;color:#67756e}
+.demo-tag:before{content:'';height:6px;width:6px;border:1px solid #81938a;border-radius:50%}
+.review-about{padding:7px 0;border:0;background:none;border-bottom:1px solid #aebbb3;font-size:11px}
+#app{--base:#f6f7f3;--surface:#fff;--ink:#25382f;--muted:#64736a;--accent:#365c49;--accent-soft:#eaf0e9;--line:#dce3dc;--radius:9px;min-height:calc(100dvh - 78px);background:var(--base);color:var(--ink)}
+#app[data-theme=agenda]{--base:#f1f5fa;--ink:#24354b;--muted:#65788e;--accent:#315c91;--accent-soft:#edf3fb;--line:#dfe6ef;--radius:7px}
+#app[data-theme=mesa]{--base:#eaf0f5;--ink:#263746;--muted:#667988;--accent:#40637d;--accent-soft:#e0e8ef;--line:#d6dfe6;--radius:6px;font-family:'Manrope','Segoe UI',sans-serif}
+.app-shell{display:grid;grid-template-columns:226px minmax(0,1fr);max-width:1800px;margin:auto;min-height:calc(100dvh - 78px)}
+.navigation{padding:34px 19px 24px;border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0;background:#f0f3ed}
+.brand{display:flex;align-items:center;gap:10px;padding-left:16px;margin-bottom:41px}
+.brand .icon{width:27px;height:27px;color:var(--accent);stroke-width:1.6}
+.brand span{font-family:'Literata',Georgia,serif;font-size:29px;font-weight:500;letter-spacing:-1.4px;line-height:1}
+.navigation nav{display:flex;flex-direction:column;gap:5px}
+.nav-link{border:0;background:none;display:flex;align-items:center;gap:13px;padding:12px 16px;border-radius:6px;text-align:left;color:var(--muted);font-size:13px;min-height:45px}
+.nav-link:hover{background:var(--accent-soft);color:var(--ink)}
+.nav-link.active{background:#e1e9df;color:#294b38;font-weight:600}
+.nav-link .icon{width:18px;height:18px}
+.nav-bottom{margin-top:auto;padding:50px 12px 0}
+.plan-note{display:flex;flex-direction:column;gap:7px;margin-bottom:34px;padding-bottom:23px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted)}
+.plan-note strong{font-size:12px;font-weight:600;color:var(--ink);line-height:1.6}
+.profile{display:flex;gap:10px;align-items:center}
+.avatar{display:flex;align-items:center;justify-content:center;width:33px;height:33px;border-radius:50%;background:#dfe6de;color:#3f5544;font-size:10px;font-weight:600;flex-shrink:0}
+.profile>div{display:flex;flex-direction:column;gap:2px;white-space:nowrap}
+.profile strong{font-size:11px;font-weight:600}
+.profile>div>span{font-size:10px;color:var(--muted)}
+.workspace{padding:0 38px;min-width:0;display:flex;flex-direction:column}
+.workspace-top{min-height:69px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);gap:14px}
+.workspace-top>div{display:flex;align-items:center;gap:18px}
+.workspace-top .icon-button{width:30px;height:30px}
+.page-heading{display:flex;align-items:center;justify-content:space-between;gap:22px;margin:32px 0 28px}
+.page-heading h1{font-family:'Literata',Georgia,serif;font-size:32px;font-weight:500;letter-spacing:-1px;line-height:1.3}
+.page-heading p{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.7}
+.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 15px;min-height:40px;font-size:12px;font-weight:500;border-radius:5px;white-space:nowrap;border:1px solid transparent;text-decoration:none;line-height:1.4}
+.button .icon{width:16px;height:16px}
+.button-primary{background:var(--accent);color:white;border-color:var(--accent)}
+.button-primary:hover{filter:brightness(1.08)}
+.button-outline{border-color:var(--line);background:var(--surface);color:var(--ink)}
+.button-outline:hover{border-color:var(--accent)}
+.button-small{padding:6px 14px;min-height:32px}
+.text-button{background:transparent;border:0;color:var(--accent);padding:6px 0;display:inline-flex;gap:6px;align-items:center;font-size:11px;font-weight:600;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px;white-space:nowrap}
+.text-button:hover{text-decoration-color:currentColor}
+.text-button .icon{width:15px;height:15px}
+.icon-button{display:inline-flex;align-items:center;justify-content:center;background:transparent;border:0;border-radius:5px;width:36px;height:36px;color:var(--muted)}
+.icon-button:hover{background:var(--accent-soft);color:var(--ink)}
+.icon-button .icon{width:18px;height:18px}
+.subtle{color:var(--muted);font-size:12px;line-height:1.7}
+.section{margin-top:28px}
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}
+.section-title h2,.weekly-summary h2,.study-aside h2{font-size:14px;font-weight:600;letter-spacing:-.2px}
+.section-title>span{font-size:10px;color:var(--muted)}
+.section-label{font-size:11px;font-weight:500;color:var(--accent)}
+.library-columns{display:grid;grid-template-columns:minmax(0,1fr) 235px;gap:36px}
+.next-study{position:relative;background:#e9efe5;border:1px solid #d9e3d3;border-radius:var(--radius);padding:24px 26px 23px;overflow:hidden}
+.next-study-top{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#4f6b57;margin-bottom:24px}
+.next-study-top>span:last-child{display:flex;align-items:center;gap:6px}
+.next-study-top .icon{width:13px;height:13px}
+.subject-kicker{font-size:11px;font-weight:500;color:#536c58}
+.next-study h2{font-family:'Literata',Georgia,serif;font-size:29px;font-weight:500;letter-spacing:-.7px;margin:6px 0 10px;line-height:1.3;position:relative;z-index:1}
+.next-study>p:last-of-type{font-size:11px;color:#596b59;max-width:360px;line-height:1.8}
+.next-study-bottom{margin-top:25px;display:flex;align-items:center;gap:16px;position:relative;z-index:1}
+.next-study-bottom>span{font-size:10px;color:#657960}
+.book-tab{position:absolute;right:31px;top:-1px;height:65px;width:31px;background:#9eaf91;clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);opacity:.55}
+.next-study-top>span:last-child{margin-right:47px}
+.task-row{display:flex;align-items:center;gap:14px;padding:15px 0;border-bottom:1px solid var(--line);min-width:0}
+.task-row:first-of-type{border-top:1px solid var(--line)}
+.task-check{width:21px;height:21px;border:1px solid #bac8bd;border-radius:4px;background:none;padding:0;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:var(--muted)}
+.task-check .icon{width:14px;height:14px}
+.task-check.checked{color:white;background:var(--accent);border-color:var(--accent)}
+.task-row.completed .task-text strong{text-decoration:line-through;color:var(--muted)}
+.task-text{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.task-text>span{font-size:10px;color:var(--muted)}
+.task-text strong{font-size:13px;font-weight:500;line-height:1.5}
+.task-text small{font-size:10px;color:var(--muted)}
+.duration{font-size:11px;color:var(--muted);white-space:nowrap}
+.task-start{border:1px solid var(--line);width:31px;height:31px;background:white;margin-left:6px}
+.task-start .icon{width:13px;height:13px}
+.subject-row{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);padding:16px 0;display:flex;align-items:center;gap:15px;text-align:left}
+.subject-row:hover{background:#e9eee545}
+.subject-spine{height:33px;width:5px;background:#748b76;border-radius:1px;flex-shrink:0}
+.spine-1{background:#9a9879}.spine-2{background:#9baa9b}.spine-3{background:#bec5ac}
+.subject-name{font-size:12px;flex:1;min-width:125px}
+.subject-name small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.progress-track{height:4px;background:var(--line);border-radius:3px;overflow:hidden;display:block}
+.progress-track>span{height:100%;background:var(--accent);display:block;border-radius:3px}
+.subject-row>.progress-track{width:68px;flex-shrink:0}
+.accuracy{font-size:12px;text-align:right;min-width:50px}
+.accuracy small{font-size:9px;color:var(--muted);display:block}
+.subject-row>.icon{width:13px;color:var(--muted)}
+.study-aside{padding-left:26px;border-left:1px solid var(--line)}
+.mini-calendar{padding-top:3px}
+.mini-calendar .section-title{margin-bottom:20px}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px 0;text-align:center;font-size:10px}
+.weekday{color:var(--muted);height:23px;font-size:9px}
+.date{display:flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:50%;justify-self:center;position:relative}
+.date.selected{background:var(--accent);color:white}
+.date.studied:after{content:'';width:3px;height:3px;border-radius:50%;background:#7e967e;position:absolute;bottom:1px;left:11px}
+.calendar-key{font-size:9px;color:var(--muted);margin-top:18px;display:flex;align-items:center;gap:5px}
+.calendar-key i{width:4px;height:4px;border-radius:50%;background:#7e967e}
+.weekly-summary{border-top:1px solid var(--line);padding-top:23px;margin-top:28px}
+.weekly-summary .section-title{gap:5px}
+.weekly-summary .text-button{font-size:10px}
+.week-bars{height:110px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:8px 3px 0;border-bottom:1px solid var(--line);margin-bottom:18px}
+.week-bars>div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:9px;flex:1}
+.week-bars .bar{width:15px;background:#c8d3c5;border-radius:3px 3px 0 0;display:block}
+.week-bars .bar.current{background:var(--accent)}
+.week-bars small{font-size:9px;color:var(--muted);padding-bottom:9px}
+.week-total{display:flex;flex-direction:column;gap:3px;margin-bottom:14px}
+.week-total strong{font-size:22px;font-weight:500;letter-spacing:-.7px}
+.week-total>span{font-size:10px;color:var(--muted)}
+.exam-note{display:flex;gap:11px;margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}
+.exam-note>.icon{width:20px;color:var(--muted);margin-top:1px}
+.exam-note h2{font-size:12px}.exam-note p{font-size:10px;color:var(--muted);margin:5px 0}
+.workspace-footer{margin-top:auto;display:flex;justify-content:space-between;gap:15px;padding:38px 0 22px;font-size:9px;color:var(--muted)}
+.workspace-footer>span:first-child{font-family:'Literata',Georgia,serif;font-size:11px}
+
+/* A agenda muda o eixo de navegação e a composição. */
+.horizontal{display:block}
+.horizontal .navigation{height:82px;padding:0 40px;flex-direction:row;align-items:center;justify-content:space-between;background:white;border-right:0;border-bottom:1px solid var(--line);gap:35px}
+.horizontal .brand{margin:0;padding:0}
+.horizontal .brand span{font-family:'Public Sans','Segoe UI',sans-serif;font-size:26px;font-weight:600;letter-spacing:-1.5px}
+.horizontal .navigation nav{flex-direction:row;align-self:stretch;gap:18px;flex:1;justify-content:center}
+.horizontal .nav-link{border-radius:0;padding:0 5px;border-bottom:2px solid transparent;color:#6b7989;font-size:12px;gap:8px}
+.horizontal .nav-link.active{background:transparent;color:var(--accent);border-bottom-color:var(--accent)}
+.horizontal .nav-link:hover{background:transparent;color:var(--accent)}
+.horizontal .nav-link .icon{width:16px;height:16px}
+.horizontal .nav-bottom{padding:0;margin:0}
+.horizontal .avatar{background:#e6edf5;color:var(--accent)}
+.horizontal .profile strong{font-size:11px}
+.horizontal .workspace{max-width:1450px;margin:auto;padding:0 40px}
+.horizontal .workspace-top{border:0;min-height:54px}
+.horizontal .page-heading{margin-top:12px;margin-bottom:29px}
+.horizontal .page-heading h1{font-family:'Public Sans','Segoe UI',sans-serif;font-size:29px;font-weight:600;letter-spacing:-1.1px}
+.agenda-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px}
+.agenda-toolbar>div{display:flex;align-items:center;gap:14px}
+.agenda-toolbar h2{font-size:15px;font-weight:600;min-width:180px;text-align:center}
+.agenda-toolbar .icon-button{background:white;border:1px solid var(--line);width:29px;height:29px}
+.agenda-toolbar .icon-button .icon{width:14px;height:14px}
+.agenda-columns{display:grid;grid-template-columns:minmax(0,1fr) 245px;gap:25px}
+.week-calendar{background:white;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.week-day-labels{display:grid;grid-template-columns:54px repeat(7,minmax(0,1fr));border-bottom:1px solid var(--line);padding:14px 0 10px}
+.time-header{font-size:8px;color:var(--muted);align-self:end;padding:0 4px 5px 7px}
+.day-heading{border:0;background:transparent;display:flex;align-items:center;flex-direction:column;gap:5px;font-size:10px;color:var(--muted);min-height:55px}
+.day-heading strong{font-size:15px;font-weight:500;width:29px;height:29px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:var(--ink)}
+.day-heading.active strong{background:var(--accent);color:white}
+.day-heading.active{color:var(--accent)}
+.week-grid{height:435px;display:grid;grid-template-columns:54px repeat(7,minmax(0,1fr));padding-bottom:0;background:repeating-linear-gradient(to bottom,transparent 0,transparent 71.5px,#e9eef4 71.5px,#e9eef4 72.5px)}
+.time-axis{display:flex;flex-direction:column;justify-content:space-between;height:100%;padding:4px 0 55px 9px;background:white}
+.time-axis span{font-size:8px;color:#7a8ba0}
+.day-column{position:relative;border-left:1px solid #edf1f6;min-width:0}
+.day-column.selected-day{background:#edf3fb55}
+.calendar-event{position:absolute;left:3px;right:3px;border:0;border-left:2px solid #6486b1;border-radius:3px;background:#e8eff9;padding:7px 5px;text-align:left;display:flex;flex-direction:column;gap:3px;overflow:hidden;color:#2c537f;min-height:64px;line-height:1.4}
+.calendar-event:hover{background:#dbe7f6}
+.calendar-event.new-content{background:#f8eddc;color:#895c24;border-left-color:#b18a51}
+.calendar-event time{font-size:8px;opacity:.85}
+.calendar-event strong{font-size:9px;font-weight:600;overflow-wrap:anywhere}
+.calendar-event>span{font-size:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.calendar-footer{display:flex;align-items:center;gap:19px;border-top:1px solid var(--line);padding:13px 18px;font-size:9px;color:var(--muted)}
+.calendar-footer>span{display:flex;align-items:center;gap:6px}
+.calendar-footer>span:last-child{margin-left:auto;font-size:8px}
+.calendar-footer i{width:7px;height:7px;border-radius:2px;background:#8ba5c9}
+.calendar-footer .legend-new{background:#c4a36d}
+.agenda-aside{background:white;padding:23px 20px;border:1px solid var(--line);border-radius:var(--radius)}
+.agenda-aside>h2{font-size:17px;font-weight:500;letter-spacing:-.4px}
+.agenda-aside>.subtle{font-size:10px;margin-top:4px}
+.day-sessions{margin:19px 0 28px;display:flex;flex-direction:column;gap:18px}
+.day-sessions>button{position:relative;padding:0 0 0 16px;display:flex;flex-direction:column;gap:5px;border:0;border-left:2px solid #b6c9e0;background:none;text-align:left}
+.day-sessions>button:hover{border-left-color:var(--accent)}
+.day-sessions time{font-size:10px;color:var(--accent)}
+.day-sessions strong{font-size:12px;font-weight:600;line-height:1.5}
+.day-sessions span{font-size:10px;color:var(--muted)}
+.day-sessions small{font-size:9px;color:var(--muted)}
+.agenda-aside .week-total{border-top:1px solid var(--line);padding-top:20px}
+.agenda-aside>.progress-track{margin-bottom:11px}
+.agenda-bottom{margin-top:22px;display:flex;align-items:center;gap:30px;padding:21px 23px;background:white;border:1px solid var(--line);border-radius:var(--radius)}
+.agenda-bottom h2{font-size:13px}.agenda-bottom p{font-size:11px;color:var(--muted);margin-top:5px}
+.agenda-bottom>.progress-track{flex:1;max-width:250px;margin-left:auto}
+.agenda-mobile-list{display:none}
+.empty-note{padding:20px;font-size:12px;color:var(--muted);line-height:1.8}
+
+/* A Mesa concentra a identidade na área de trabalho da sessão. */
+[data-theme=mesa] .app-shell{grid-template-columns:194px minmax(0,1fr)}
+[data-theme=mesa] .navigation{background:#243549;color:#dce5ed;border:0;padding:34px 13px 23px}
+[data-theme=mesa] .brand span{font-family:'Manrope','Segoe UI',sans-serif;font-size:27px;font-weight:600;letter-spacing:-1.3px}
+[data-theme=mesa] .brand .icon{color:#d2ac6f}
+[data-theme=mesa] .nav-link{color:#a8bacb;font-size:12px;padding:12px 13px;gap:12px}
+[data-theme=mesa] .nav-link.active{background:#35495f;color:#fff}
+[data-theme=mesa] .nav-link:hover{background:#2e4359;color:#fff}
+[data-theme=mesa] .nav-bottom{padding-left:11px;padding-right:5px}
+[data-theme=mesa] .plan-note{border-color:#405063;color:#a6b6c6}
+[data-theme=mesa] .plan-note strong{color:#edf2f7}
+[data-theme=mesa] .avatar{background:#3a4e63;color:#eddfc9}
+[data-theme=mesa] .profile>div>span{color:#a6b6c6}
+[data-theme=mesa] .page-heading h1{font-family:'Manrope','Segoe UI',sans-serif;font-size:29px;letter-spacing:-1px;font-weight:600}
+[data-theme=mesa] .workspace{padding:0 38px}
+.focus-date{font-size:11px;color:var(--muted);border:1px solid #d1dce4;padding:9px 12px;border-radius:4px}
+.desk-columns{display:grid;grid-template-columns:minmax(0,1fr) 275px;gap:23px}
+.focus-workspace{background:#243549;color:#f5f7fa;border-radius:7px;padding:25px 30px 0;overflow:hidden}
+.focus-topic{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:10px;color:#b5c5d3;margin-bottom:31px}
+.focus-topic>span:first-child{display:flex;align-items:center;gap:7px}
+.focus-topic .icon{width:16px;height:16px}
+.focus-marker{font-size:9px;color:#dfc394;border-bottom:1px solid #8b795d;padding-bottom:3px}
+.focus-workspace h2{font-size:28px;font-weight:500;letter-spacing:-1.1px;line-height:1.35}
+.focus-workspace>p{color:#adbfce;font-size:11px;margin-top:8px}
+.timer-zone{margin:30px 0 24px}
+.timer-zone>p{font-size:10px;color:#a9bbcc;margin-bottom:2px}
+.timer-value{font-variant-numeric:tabular-nums;letter-spacing:-5px;font-weight:400;font-size:76px;line-height:1.35}
+.duration-options{display:flex;gap:6px;margin-top:9px}
+.duration-options>button{background:transparent;border:1px solid #536476;color:#bdccd9;font-size:10px;padding:5px 12px;border-radius:3px;min-height:28px}
+.duration-options>button[aria-pressed=true]{background:#45586d;color:#fff;border-color:#657589}
+.focus-controls{display:flex;gap:9px;margin-bottom:31px}
+.button-focus{background:#d2ac6f;color:#263344;min-width:145px;font-weight:600}
+.button-focus:hover{background:#e0bc84}
+.button-on-dark{background:transparent;color:#dce5ed;border-color:#5b6b7c}
+.focus-footnote{margin:0 -30px;padding:15px 30px;border-top:1px solid #425064;color:#a8bacb;display:flex;justify-content:space-between;gap:15px;font-size:9px}
+.desk-queue{background:#f8fafc;border:1px solid var(--line);border-radius:7px;padding:22px 19px 20px}
+.desk-queue .section-title{margin-bottom:12px}
+.desk-queue .section-title h2{font-size:13px}.desk-queue .section-title>span{font-size:9px}
+.queue-item{padding:16px 0;display:flex;gap:12px;width:100%;border:0;border-bottom:1px solid var(--line);background:none;text-align:left}
+.queue-number{margin-top:4px;font-size:10px;font-weight:500;width:19px;height:19px;border:1px solid #cbd7e0;display:flex;align-items:center;justify-content:center;border-radius:50%;color:#718598;flex-shrink:0}
+.queue-number .icon{width:12px;height:12px}
+.queue-item.selected .queue-number{background:#dce5ec;border-color:#8aa1b4;color:#365369}
+.queue-item>div{display:flex;flex-direction:column;gap:5px}
+.queue-item small{font-size:9px;color:var(--muted)}
+.queue-item strong{font-size:11px;font-weight:600;line-height:1.6}
+.queue-item>div>span{font-size:9px;color:var(--muted)}
+.queue-item.selected strong{color:var(--accent)}
+.desk-plan{padding-top:20px}
+.desk-plan h3{font-size:10px;color:var(--muted);font-weight:500}
+.desk-plan>div{display:flex;justify-content:space-between;align-items:center;margin:8px 0 12px;font-size:11px}
+.desk-plan strong{font-size:19px;font-weight:500;letter-spacing:-.4px}
+.desk-plan strong>span{font-size:10px;font-weight:400;color:var(--muted);letter-spacing:0}
+.desk-plan>.text-button{margin-top:8px;font-size:10px}
+.recent-sessions{padding:20px 23px;border-radius:7px;background:#f8fafc;border:1px solid var(--line);margin-top:24px}
+.recent-sessions .section-title h2{font-size:13px}
+.recent-sessions table th{font-size:9px}
+.recent-sessions table td{font-size:10px;padding:13px 10px}
+.recent-sessions table td>strong{font-size:11px}
+.recent-sessions table td>span{font-size:9px}
+
+/* Páginas de avaliação comuns, com os tokens de cada proposta. */
+.active-notice{display:flex;gap:24px;align-items:center;padding:27px;background:white;border:1px solid var(--line);border-radius:var(--radius);border-top:3px solid var(--accent)}
+.notice-file{display:flex;align-items:center;justify-content:center;width:58px;height:74px;background:var(--accent-soft);border:1px solid var(--line);border-radius:3px;flex-shrink:0;color:var(--accent)}
+.notice-file .icon{width:28px;height:28px;stroke-width:1.2}
+.status-label{font-size:9px;font-weight:500;color:var(--accent);background:var(--accent-soft);border-radius:3px;padding:4px 7px;white-space:nowrap;display:inline-block}
+.status-neutral{background:#edf0f0;color:#66736f}
+.status-due{background:#f3eadc;color:#89672e}
+.active-notice h2{font-size:20px;letter-spacing:-.6px;margin:9px 0 6px}
+.active-notice p{font-size:11px;color:var(--muted)}
+.active-notice p.subtle{font-size:10px;margin-top:7px}
+.notice-progress{margin-left:auto;width:140px;flex-shrink:0;font-size:11px}
+.notice-progress>.progress-track{margin:10px 0 9px}
+.notice-progress>span:last-child{font-size:10px;color:var(--muted)}
+.notice-row{display:flex;align-items:center;gap:24px;padding:24px 0;border-bottom:1px solid var(--line)}
+.notice-row>div{display:flex;align-items:center;gap:17px;flex:1}
+.notice-row>div>.icon{width:24px;height:24px;color:var(--muted)}
+.notice-row h3{font-size:14px;font-weight:500;margin-bottom:7px}
+.notice-row p{font-size:11px;color:var(--muted)}
+.help-note{display:flex;gap:12px;align-items:start;font-size:11px;color:var(--muted);line-height:1.8;margin-top:26px;max-width:650px}
+.help-note>.icon{margin-top:2px;width:17px;height:17px}
+.topic-toolbar{display:flex;align-items:center;gap:14px;margin-bottom:21px;flex-wrap:wrap}
+.search-field{display:flex;align-items:center;gap:10px;background:white;border:1px solid var(--line);border-radius:5px;min-width:230px;max-width:360px;flex:1;padding:0 13px}
+.search-field .icon{width:16px;height:16px;color:var(--muted)}
+.search-field input{border:0;background:none;font-size:11px;padding:12px 0;min-width:0;width:100%;color:var(--ink)}
+.search-field:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.search-field input:focus-visible{outline:0}
+.select-field{display:flex;align-items:center;gap:9px;font-size:10px;color:var(--muted)}
+.select-field select{padding:10px 27px 10px 10px;border:1px solid var(--line);border-radius:4px;background:white;color:var(--ink);font-size:11px}
+.topic-count{font-size:10px;color:var(--muted);margin-left:auto}
+.topic-summary{display:flex;align-items:center;gap:35px;font-size:10px;color:var(--muted);margin-bottom:24px}
+.topic-summary strong{font-size:16px;font-weight:500;margin-right:4px;color:var(--ink)}
+.table-surface{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:white}
+.table-scroll{overflow:auto}
+table{width:100%;border-collapse:collapse;text-align:left;font-size:11px}
+th{padding:15px 17px;border-bottom:1px solid var(--line);font-size:10px;color:var(--muted);font-weight:500;white-space:nowrap}
+td{padding:17px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:11px}
+tr:last-child td{border-bottom:0}
+td>strong{display:block;font-size:12px;font-weight:500;white-space:nowrap}
+td>span:not(.status-label){display:block;color:var(--muted);font-size:10px;margin-top:5px}
+.topics-table td:nth-child(n+2){white-space:nowrap}
+.topics-table td:first-child{width:35%}
+.admin-columns{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:35px;align-items:start}
+.form-surface{padding:25px;background:white;border:1px solid var(--line);border-radius:var(--radius)}
+.form-surface h2{font-size:16px;margin-bottom:9px;letter-spacing:-.3px}
+.form-surface>.subtle{font-size:11px}
+form{display:flex;flex-direction:column;gap:21px}
+.form-surface form{margin-top:25px}
+form label{display:flex;flex-direction:column;gap:8px;font-size:11px;font-weight:500}
+form input,form select,textarea{padding:11px;border-radius:4px;border:1px solid var(--line,#dce3dc);background:#fff;color:var(--ink,#25382f);width:100%;font-size:12px;font-weight:400}
+form input::placeholder{color:#819087}
+form input[type=file]{font-size:10px}
+.form-note{font-size:10px;color:var(--muted,#68786d);line-height:1.8}
+.user-list{padding-top:6px}
+.user-list .section-title{padding-bottom:14px;border-bottom:1px solid var(--line)}
+.user-row{display:flex;align-items:center;gap:13px;padding:19px 0;border-bottom:1px solid var(--line)}
+.user-row>.avatar{background:var(--accent-soft);color:var(--accent);width:36px;height:36px}
+.user-row>div{flex:1;min-width:0}
+.user-row strong{font-size:12px;font-weight:500;overflow-wrap:anywhere}
+.user-row>div>span{display:block;font-size:10px;color:var(--muted);margin-top:4px}
+.user-row>.icon{width:16px;height:16px;color:var(--accent)}
+.settings-form{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:24px;align-items:start}
+.settings-form>button{justify-self:start}
+.availability{display:flex;flex-direction:column;gap:15px;margin-top:25px}
+.availability>label{display:grid;grid-template-columns:minmax(90px,1fr) 70px 40px;align-items:center;font-size:12px;font-weight:400;gap:14px}
+.availability>label input{padding:8px;font-size:12px;text-align:center}
+.availability>label>span{font-size:10px;color:var(--muted)}
+.settings-goals{display:flex;flex-direction:column;gap:20px}
+.settings-goals h2{margin-bottom:4px}
+.settings-goals .subtle{font-size:10px}
+.form-pair{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+
+/* Janelas e retornos de ações de demonstração. */
+dialog{border:1px solid #d8dfda;border-radius:10px;max-width:calc(100vw - 32px);width:460px;max-height:90dvh;padding:0;color:#25382f;background:#fff;box-shadow:0 20px 75px #152d282b}
+dialog::backdrop{background:#172b3666;backdrop-filter:blur(3px)}
+#dialog-content{padding:34px;position:relative}
+.dialog-close{position:absolute;right:12px;top:12px}
+dialog h2{font-family:'Literata',Georgia,serif;font-size:25px;font-weight:500;letter-spacing:-.6px;line-height:1.4;padding-right:16px;margin-bottom:14px}
+dialog h3{font-size:14px;font-weight:600;margin-bottom:9px}
+dialog p{font-size:12px;line-height:1.8;color:#61746a;margin-bottom:16px}
+dialog .section-label{display:block;font-size:10px;color:#647869;margin-bottom:9px}
+dialog .button{--accent:#365c49;--line:#dce3dc;--ink:#25382f;--surface:#fff}
+dialog .text-button{color:#365c49}
+dialog form{margin-top:24px}
+dialog textarea{font-family:'Public Sans','Segoe UI',sans-serif;resize:vertical;font-size:11px;line-height:1.7;margin-bottom:18px;background:#f7f9f6}
+.dialog-timer{font-family:'Manrope','Segoe UI',sans-serif;font-size:65px;letter-spacing:-3px;text-align:center;margin:24px 0;color:#2c483a}
+.dialog-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+dialog .form-note{font-size:10px;margin-top:15px;margin-bottom:0}
+.about-dialog{width:620px}
+.concept-list{display:flex;flex-direction:column;gap:20px;margin:25px 0}
+.concept-list article{border-top:1px solid #dde3de;padding-top:20px}
+.concept-list article p{font-size:12px;margin:0 0 7px;max-width:65ch}
+.reminder-list{border-top:1px solid #dde3de;margin:20px 0}
+.reminder-list p{padding:15px 0;margin:0;border-bottom:1px solid #dde3de}
+.reminder-list p>strong{display:block;font-size:12px;color:#2e4436}
+.reminder-list p>span{font-size:10px}
+#toast{position:fixed;bottom:25px;left:50%;transform:translate(-50%,18px);opacity:0;pointer-events:none;z-index:10;padding:12px 19px;background:#253b30;color:white;border-radius:6px;box-shadow:0 4px 20px #152a2922;font-size:12px;max-width:calc(100vw - 32px);width:max-content;transition:opacity .15s,transform .15s;text-align:center}
+#toast.visible{opacity:1;transform:translate(-50%,0)}
+
+@media(min-width:1500px){.workspace{padding:0 55px}.library-columns{grid-template-columns:minmax(0,1fr) 260px;gap:50px}.study-aside{padding-left:36px}.next-study{padding:30px 35px}.next-study h2{font-size:34px}.next-study>p:last-of-type{font-size:12px}.task-row{padding:18px 0}.subject-row{padding:19px 0}.desk-columns{grid-template-columns:minmax(0,1fr) 300px}.focus-workspace{padding:32px 40px 0}.focus-workspace h2{font-size:34px}.focus-footnote{margin:0 -40px;padding:17px 40px}.timer-zone{margin:36px 0 30px}.timer-value{font-size:86px}.focus-controls{margin-bottom:35px}}
+@media(max-width:1200px){.review-bar{padding-left:22px;padding-right:22px}.review-title span{display:none}.review-tools .demo-tag{display:none}.app-shell{grid-template-columns:195px minmax(0,1fr)}.workspace,[data-theme=mesa] .workspace{padding:0 26px}.navigation{padding-left:13px;padding-right:13px}.brand{padding-left:12px}.library-columns{grid-template-columns:minmax(0,1fr) 205px;gap:25px}.study-aside{padding-left:21px}.mini-calendar .section-title{margin-bottom:14px}.date{height:22px;width:22px}.subject-row{gap:11px}.subject-row>.progress-track{width:48px}.subject-name{font-size:11px;min-width:112px}.horizontal .navigation{padding:0 25px;gap:20px}.horizontal .navigation nav{gap:14px}.horizontal .workspace{padding:0 27px}.agenda-columns{grid-template-columns:minmax(0,1fr) 215px;gap:18px}.agenda-aside{padding:21px 16px}.calendar-event strong{font-size:8px}.calendar-event>span{font-size:7px}.calendar-footer{gap:14px;padding:13px 12px}.desk-columns{grid-template-columns:minmax(0,1fr) 240px;gap:18px}.focus-workspace{padding-left:24px;padding-right:24px}.focus-footnote{margin:0 -24px;padding-left:24px;padding-right:24px}.focus-workspace h2{font-size:25px}.focus-controls{flex-wrap:wrap}.focus-controls .button{font-size:11px}.desk-queue{padding:20px 15px}.active-notice{gap:18px;padding:24px}.notice-file{display:none}.notice-progress{width:125px}.admin-columns{grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:25px}}
+@media(max-width:1000px){.app-shell{grid-template-columns:174px minmax(0,1fr)}.brand span{font-size:26px}.brand{gap:8px}.navigation{padding-left:10px;padding-right:10px}.nav-link{font-size:12px;padding-left:12px;gap:10px}.nav-bottom{padding-left:8px}.profile>div>strong{font-size:10px}.profile>div>span{font-size:9px}.library-columns{grid-template-columns:minmax(0,1fr) 175px;gap:20px}.study-aside{padding-left:17px}.calendar-grid{gap:5px 0}.date{font-size:9px;width:20px;height:20px}.calendar-key{font-size:8px}.study-aside h2{font-size:12px}.weekly-summary .text-button{font-size:9px}.week-bars{gap:8px}.week-bars .bar{width:12px}.page-heading h1{font-size:28px}.page-heading .button{font-size:10px;padding:10px}.next-study{padding:20px}.next-study h2{font-size:26px}.next-study>p:last-of-type{font-size:10px}.subject-row>.progress-track{display:none}.subject-name{min-width:0}.subject-name small{font-size:9px}.task-text strong{font-size:12px}.task-text>span,.task-text small{font-size:9px}.task-row{gap:10px}.duration{font-size:10px}.horizontal .profile>div{display:none}.horizontal .navigation nav{gap:11px}.horizontal .nav-link{font-size:11px}.agenda-columns{grid-template-columns:minmax(0,1fr) 200px}.week-day-labels,.week-grid{grid-template-columns:42px repeat(7,minmax(0,1fr))}.time-header{font-size:7px}.time-axis{padding-left:5px}.calendar-event{padding:5px 3px;left:2px;right:2px}.calendar-event>span{display:none}.calendar-event strong{font-size:8px}.agenda-toolbar h2{font-size:14px}.calendar-footer>span:last-child{display:none}[data-theme=mesa] .app-shell{grid-template-columns:168px minmax(0,1fr)}.desk-columns{grid-template-columns:minmax(0,1fr)}.desk-queue{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.desk-queue>.section-title{grid-column:1/-1}.desk-plan{grid-column:1/-1;max-width:300px}.focus-workspace{padding:27px 30px 0}.focus-workspace h2{font-size:30px}.focus-topic{margin-bottom:25px}.timer-zone{margin-top:25px}.focus-footnote{margin:0 -30px;padding-left:30px;padding-right:30px}.focus-controls{margin-bottom:27px}.active-notice{flex-wrap:wrap}.active-notice>div:nth-child(2){flex:1;min-width:190px}.active-notice .button{margin-left:auto}.notice-row{gap:18px}.notice-row h3{font-size:12px}.notice-row p{font-size:10px}.notice-row>div{gap:11px}.admin-columns{grid-template-columns:minmax(0,1fr)}.settings-form{grid-template-columns:minmax(0,1fr)}.settings-goals{max-width:400px}.topic-toolbar{gap:12px}.select-field{font-size:9px}.select-field select{font-size:10px}.topic-summary{gap:24px}.topic-summary>span{font-size:9px}.topic-summary strong{font-size:14px}}
+@media(max-width:760px){.review-bar{min-height:114px;padding:12px 18px;gap:10px;flex-wrap:wrap}.review-title{flex:1;gap:10px}.review-title span{display:block;font-size:10px;padding-left:10px}.review-title strong{font-size:16px}.review-tools{order:1}.review-about{font-size:10px}.layout-options{order:2;flex:1 0 100%;justify-content:center;padding:3px}.layout-options button{flex:1;font-size:11px;min-height:36px;padding:7px 8px}.app-shell,[data-theme=mesa] .app-shell{display:flex;flex-direction:column;min-height:calc(100dvh - 114px)}.navigation,[data-theme=mesa] .navigation{padding:17px 18px 0;border-right:0;border-bottom:1px solid var(--line);gap:15px;flex-direction:row;align-items:center;flex-wrap:wrap}.brand,[data-theme=mesa] .brand{margin:0;padding:0;gap:8px}.brand span,[data-theme=mesa] .brand span{font-size:25px}.brand .icon{width:23px;height:23px}.navigation nav,.horizontal .navigation nav{order:3;flex-direction:row;flex-basis:100%;justify-content:space-between;gap:3px;margin:0}.nav-link,[data-theme=mesa] .nav-link,.horizontal .nav-link{padding:10px 7px;font-size:10px;gap:5px;border-radius:4px 4px 0 0;flex:1;justify-content:center;min-height:42px;white-space:nowrap}.nav-link .icon,[data-theme=mesa] .nav-link .icon,.horizontal .nav-link .icon{width:14px;height:14px}.nav-bottom,[data-theme=mesa] .nav-bottom{padding:0;margin:0 0 0 auto}.plan-note{display:none}.profile>div{display:none}.avatar{width:29px;height:29px;font-size:9px}.workspace,[data-theme=mesa] .workspace,.horizontal .workspace{padding:0 20px}.workspace-top{min-height:50px;font-size:9px;gap:10px}.workspace-top>div{gap:8px}.today-label{font-size:8px}.workspace-top .icon-button{width:24px;height:24px}.workspace-top .icon-button .icon{width:15px;height:15px}.page-heading,.horizontal .page-heading{margin:23px 0;align-items:start;gap:15px}.page-heading h1,.horizontal .page-heading h1,[data-theme=mesa] .page-heading h1{font-size:25px;letter-spacing:-.7px}.page-heading p{font-size:10px;max-width:42ch;margin-top:7px}.page-heading .button{font-size:9px;min-height:34px;padding:8px 10px}.page-heading .button .icon{width:12px;height:12px}.library-columns{grid-template-columns:minmax(0,1fr);gap:28px}.study-aside{border-left:0;padding:24px 0 0;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:24px}.mini-calendar .section-title h2,.study-aside h2{font-size:13px}.date{height:24px;width:24px;font-size:10px}.calendar-grid{gap:6px 0}.calendar-key{font-size:9px}.weekly-summary{border:0;padding:0;margin:0}.weekly-summary .section-title{margin-bottom:0}.week-bars{height:125px}.exam-note{grid-column:1/-1;margin-top:0;padding-top:18px}.next-study{padding:21px 23px}.next-study h2{font-size:28px}.next-study-top{margin-bottom:20px;font-size:9px}.next-study>p:last-of-type{font-size:11px}.next-study-bottom{margin-top:23px;gap:12px}.next-study-bottom .button{font-size:11px}.next-study-bottom>span{font-size:9px}.section{margin-top:27px}.section-title h2{font-size:13px}.section-title>span{font-size:9px}.task-row{padding:16px 0;gap:12px}.task-text strong{font-size:13px}.task-text>span,.task-text small{font-size:10px}.duration{font-size:10px}.task-start{width:32px;height:32px}.subject-name{font-size:12px}.subject-name small{font-size:10px}.subject-row>.progress-track{display:block;width:65px}.subject-row{padding:16px 0}.accuracy{font-size:12px}.workspace-footer{padding:30px 0 19px;font-size:8px;line-height:1.7;align-items:end}.workspace-footer>span:last-child{max-width:230px;text-align:right}.horizontal .navigation{height:auto;padding:17px 20px 0;gap:15px}.horizontal .nav-bottom{margin-left:auto}.horizontal .brand span{font-size:25px}.horizontal .nav-link{border-bottom:2px solid transparent;border-radius:0}.horizontal .nav-link.active{border-bottom-color:var(--accent)}.horizontal .workspace-top{min-height:44px}.agenda-columns{grid-template-columns:minmax(0,1fr)}.agenda-toolbar{margin-bottom:16px}.agenda-toolbar>div{gap:9px}.agenda-toolbar h2{font-size:12px;min-width:154px}.agenda-toolbar .icon-button{width:27px;height:27px}.agenda-toolbar .button{font-size:10px;padding:5px 12px;min-height:29px}.week-day-labels{grid-template-columns:repeat(7,minmax(0,1fr));padding:14px 4px 11px}.time-header{display:none}.day-heading{font-size:10px}.day-heading strong{font-size:16px;width:31px;height:31px}.week-grid{display:none}.agenda-mobile-list{display:block;padding:0 17px}.mobile-session{display:flex;align-items:center;gap:16px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;padding:23px 0;width:100%}.mobile-session:last-child{border-bottom:0}.mobile-session time{font-size:11px;color:var(--accent)}.mobile-session>span{flex:1}.mobile-session strong{font-size:12px;font-weight:500;display:block}.mobile-session small{display:block;font-size:10px;color:var(--muted);margin-top:5px}.mobile-session .icon{width:15px;height:15px;color:var(--accent)}.calendar-footer{font-size:9px;gap:20px;padding:14px 18px}.agenda-aside{display:none}.agenda-bottom{padding:20px;gap:14px;flex-wrap:wrap}.agenda-bottom h2{font-size:13px}.agenda-bottom p{font-size:10px}.agenda-bottom>.progress-track{min-width:80%;margin:3px 0 0;max-width:none}.agenda-bottom .text-button{margin-top:0}.focus-date{display:none}.desk-columns{gap:21px}.focus-workspace{padding:23px 24px 0}.focus-topic{font-size:9px;margin-bottom:25px;gap:10px}.focus-marker{font-size:8px}.focus-workspace h2{font-size:28px}.focus-workspace>p{font-size:10px;max-width:38ch}.timer-zone{margin:28px 0 24px}.timer-value{font-size:72px;letter-spacing:-4px}.focus-controls{gap:9px;margin-bottom:25px}.focus-controls .button{font-size:10px;padding:10px 12px}.button-focus{min-width:139px}.focus-footnote{margin:0 -24px;padding:14px 24px;font-size:8px;gap:12px}.desk-queue{padding:20px;display:block}.desk-queue .section-title h2{font-size:14px}.queue-item{padding:16px 0}.queue-item strong{font-size:12px}.queue-item small,.queue-item>div>span{font-size:10px}.queue-number{width:21px;height:21px;font-size:11px}.desk-plan{max-width:none;margin-top:0}.recent-sessions{padding:20px 16px}.recent-sessions table{min-width:610px}.active-notice{padding:22px;gap:20px;flex-direction:column;align-items:start}.active-notice>div:nth-child(2){min-width:0}.active-notice h2{font-size:21px}.notice-progress{margin:0;width:100%;max-width:230px}.active-notice .button{margin:0}.notice-row{flex-wrap:wrap;gap:13px;padding:20px 0}.notice-row>div{flex-basis:100%}.notice-row h3{font-size:13px}.notice-row p{font-size:10px}.notice-row>.status-label{margin-left:35px}.notice-row>.text-button{margin-left:auto}.topic-toolbar{margin-bottom:19px}.search-field{max-width:none;min-width:100%;font-size:12px}.search-field input{font-size:12px;padding:13px 0}.select-field{font-size:10px}.select-field select{font-size:11px;padding:10px}.topic-count{font-size:9px}.topic-summary{gap:15px;justify-content:space-between;margin-bottom:19px}.topic-summary>span{font-size:9px}.topic-summary strong{font-size:15px;display:block;margin-bottom:3px}.topics-table{min-width:680px}.topics-table td:first-child{width:37%}.admin-columns{gap:28px}.form-surface{padding:22px}.form-surface h2{font-size:17px}.form-surface>.subtle{font-size:11px}.form-surface .button{font-size:12px;padding:12px}.user-row strong{font-size:12px}.settings-form{gap:21px}.availability{gap:16px}.availability>label{font-size:12px}.settings-goals{max-width:none}.availability input{min-height:38px}.settings-form>button{font-size:12px}#dialog-content{padding:30px 24px}dialog h2{font-size:23px}.dialog-timer{font-size:62px}dialog p{font-size:12px}}
+@media(max-width:390px){.review-title span{font-size:9px}.review-bar{padding-left:14px;padding-right:14px}.review-about{font-size:9px}.review-title{gap:8px}.workspace,[data-theme=mesa] .workspace,.horizontal .workspace{padding-left:16px;padding-right:16px}.nav-link,[data-theme=mesa] .nav-link,.horizontal .nav-link{font-size:9px;padding-left:4px;padding-right:4px;gap:4px}.nav-link .icon{width:13px;height:13px}.page-heading h1,.horizontal .page-heading h1,[data-theme=mesa] .page-heading h1{font-size:23px}.page-heading .button{font-size:8px;padding:7px}.next-study{padding:19px}.next-study h2{font-size:25px}.next-study-bottom{gap:9px}.next-study-bottom>span{font-size:8px}.task-row{gap:9px}.task-text strong{font-size:12px}.task-text>span,.task-text small{font-size:9px}.task-start{width:28px;height:28px;margin-left:0}.subject-row>.progress-track{width:40px}.subject-name{font-size:11px}.subject-name small{font-size:9px}.study-aside{gap:18px}.date{width:20px;height:20px;font-size:9px}.calendar-key{font-size:8px}.week-bars .bar{width:11px}.weekly-summary .text-button{font-size:8px}.study-aside h2{font-size:12px}.agenda-toolbar>div{gap:6px}.agenda-toolbar h2{min-width:140px;font-size:11px}.focus-workspace{padding-left:20px;padding-right:20px}.focus-topic{font-size:8px}.focus-marker{font-size:7px}.focus-workspace h2{font-size:25px}.focus-footnote{margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px;font-size:7px}.focus-controls{gap:7px}.focus-controls .button{font-size:9px;padding:10px}.button-focus{min-width:129px}}
+/* Ajustes após revisão das capturas: leitura e posição do rodapé de foco. */
+.focus-workspace{display:flex;flex-direction:column}
+.focus-workspace .focus-footnote{margin-top:auto}
+.next-study>.subject-kicker{font-size:12px}
+.task-text strong{font-size:14px}
+.task-text>span,.task-text small{font-size:11px}
+.subject-name{font-size:13px}
+.subject-name small{font-size:11px}
+.queue-item strong{font-size:13px}
+.queue-item small{font-size:11px}
+.queue-item>div>span{font-size:10px}
+@media(min-width:1001px){.calendar-event{padding:8px 6px;min-height:70px}.calendar-event time{font-size:10px}.calendar-event strong{font-size:11px}.calendar-event>span{font-size:9px}.day-sessions strong{font-size:13px}.day-sessions span{font-size:11px}.day-sessions small{font-size:10px}.time-axis span{font-size:10px}.day-heading{font-size:12px}.calendar-footer{font-size:10px}.time-header{font-size:9px}}
+@media(max-width:760px){.next-study>.subject-kicker{font-size:11px}.task-text strong{font-size:13px}.task-text>span,.task-text small{font-size:10px}.subject-name{font-size:12px}.subject-name small{font-size:10px}.queue-item strong{font-size:13px}.queue-item small{font-size:11px}.mobile-session strong{font-size:13px}.mobile-session small{font-size:11px}}
+/* Mesa ampliada: atividade, calendário, metas e cronograma. */
+.desk-shortcuts{display:flex;align-items:center;gap:24px;margin:-7px 0 25px;padding:0 0 15px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.desk-shortcuts a{font-size:11px;color:var(--muted);text-decoration:none;padding:5px 0;text-underline-offset:5px}
+.desk-shortcuts a:first-child{color:var(--accent);font-weight:600}
+.desk-shortcuts a:hover{color:var(--ink);text-decoration:underline}
+.desk-section,.section-anchor,#historico{scroll-margin-top:24px}
+.desk-section{margin-top:25px;background:#f8fafc;border:1px solid var(--line);border-radius:7px;padding:25px;min-width:0}
+.desk-section-heading{display:flex;justify-content:space-between;align-items:start;gap:20px;margin-bottom:23px}
+.desk-section-heading h2{font-size:16px;font-weight:600;letter-spacing:-.35px}
+.desk-section-heading p{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.7}
+.activity-period select{padding:8px 29px 8px 11px;background:white;border:1px solid var(--line);border-radius:4px;font-size:11px;color:var(--ink);max-width:220px}
+.activity-scroll{overflow-x:auto;padding:1px 1px 7px}
+.activity-chart{--cell:clamp(10px,calc((100vw - 580px)/53),15px);display:grid;grid-template-columns:29px max-content;grid-template-rows:24px auto;width:max-content}
+.activity-months{grid-column:2;display:grid;grid-template-columns:repeat(var(--weeks),var(--cell));gap:4px;font-size:9px;color:var(--muted)}
+.activity-day-labels{display:grid;grid-template-rows:repeat(7,var(--cell));gap:4px;font-size:8px;color:var(--muted);align-items:center}
+.activity-cells{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,var(--cell));grid-template-columns:repeat(var(--weeks),var(--cell));gap:4px}
+.activity-cell{border:1px solid #cbd5de55;border-radius:2px;padding:0;background:#e6ecf1;width:var(--cell);height:var(--cell)}
+.level-0{background:#e6ecf1}.level-1{background:#bbcedd}.level-2{background:#87a8bf}.level-3{background:#527d9d}.level-4{background:#2d536f}
+.activity-cell.chosen{outline:2px solid #b38b4b;outline-offset:2px}
+.activity-cell.future-day{background:#f0f4f7;border-color:#dce4ea}
+.activity-cell:focus-visible{outline:2px solid #263e54;outline-offset:2px}
+.activity-footer{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-top:12px;font-size:10px;color:var(--muted)}
+.activity-footer strong{font-weight:600;color:var(--ink)}
+.activity-legend{display:flex;align-items:center;gap:4px;font-size:9px;white-space:nowrap}
+.activity-legend i{height:11px;width:11px;border-radius:2px;display:block}
+.activity-legend>span:first-child{margin-right:4px}.activity-legend>span:last-child{margin-left:4px}
+.activity-hint{display:none}
+.desk-calendar-columns{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(240px,1fr);gap:24px}
+.calendar-mode{display:flex;gap:2px;background:#e9eef3;padding:3px;border-radius:5px}
+.calendar-mode>button{border:0;border-radius:3px;background:transparent;font-size:10px;color:var(--muted);padding:5px 11px;min-height:27px}
+.calendar-mode>button[aria-pressed=true]{background:#fff;color:var(--ink);box-shadow:0 1px 3px #233d5112}
+.full-calendar-toolbar{display:flex;align-items:center;gap:8px;margin:0 0 18px}
+.full-calendar-toolbar h3{font-size:13px;font-weight:500;text-transform:capitalize;min-width:150px;text-align:center}
+.full-calendar-toolbar .icon-button{border:1px solid var(--line);background:white;width:29px;height:29px}
+.full-calendar-toolbar .icon-button .icon{width:14px;height:14px}
+.full-calendar-toolbar .text-button{margin-left:auto;font-size:10px}
+.full-weekdays,.full-month-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.full-weekdays{padding-bottom:12px;font-size:10px;text-align:center;color:var(--muted)}
+.full-month-days{row-gap:7px}
+.full-date{height:43px;border:1px solid transparent;background:transparent;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;font-size:12px;position:relative}
+.full-date:hover{background:#e5edf3}.full-date.today{border-color:#9fb4c5;color:#325471;font-weight:600}
+.full-date.selected{background:#40637d;color:#fff;border-color:#40637d}
+.full-date.off-month{color:#a6b5c1}
+.full-date.selected.off-month{color:white}
+.date-markers{display:flex;gap:3px;min-height:3px}
+.date-markers i{display:block;width:3px;height:3px;background:#9bb0bf;border-radius:50%}
+.full-date.selected .date-markers i{background:#d7bf94}
+.selected-day-sessions{margin-top:21px;padding-top:21px;border-top:1px solid var(--line)}
+.selected-day-sessions .section-title h3{font-size:11px;font-weight:500;text-transform:capitalize;line-height:1.7}
+.selected-day-sessions .section-title>span{font-size:9px;white-space:nowrap}
+.selected-day-sessions>button{padding:13px 0;display:flex;align-items:center;gap:14px;border:0;border-bottom:1px solid #e1e7ec;background:none;text-align:left;width:100%}
+.selected-day-sessions>button:last-child{border-bottom:0}
+.selected-day-sessions time{font-size:10px;color:var(--accent)}
+.selected-day-sessions>button>span{flex:1}
+.selected-day-sessions strong{display:block;font-size:12px;font-weight:500}
+.selected-day-sessions small{display:block;font-size:10px;color:var(--muted);margin-top:4px}
+.selected-day-sessions .icon{width:14px;height:14px;color:var(--accent)}
+.calendar-year-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 12px}
+.year-month{border:1px solid transparent;background:none;border-radius:4px;padding:8px 6px;text-align:left}
+.year-month:hover{background:#edf2f6}.year-month.current-month{border-color:#c4d2dc;background:#edf2f6}
+.year-month>strong{display:block;font-size:10px;font-weight:500;margin-bottom:9px;text-transform:capitalize}
+.year-mini-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px 0;text-align:center;font-size:7px;color:#637d90}
+.year-mini-days .off-month{color:#b8c4cd}.year-mini-days .mini-today{background:#40637d;color:white;border-radius:2px}
+.study-goals>.desk-section-heading>.icon{width:19px;height:19px;color:#8ba0b2;margin-top:4px}
+.goal-item{padding:23px 0;border-bottom:1px solid var(--line)}
+.goal-item:first-of-type{padding-top:1px}
+.goal-item>div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:13px}
+.goal-item h3{font-size:11px;font-weight:500}
+.goal-item strong{font-size:18px;font-weight:500;letter-spacing:-.3px;white-space:nowrap}
+.goal-item strong>span{font-size:11px;color:var(--muted);font-weight:400}
+.goal-item>p{font-size:10px;color:var(--muted);margin-top:10px}
+.goal-activity{padding-top:24px}.goal-activity h3{font-size:11px;font-weight:500}
+.goal-activity .week-bars .bar{background:#c0cfdb}.goal-activity .week-bars .bar.current{background:#567b96}
+.goal-activity .week-bars{margin-top:10px}.study-goals>.text-button{margin-top:7px}
+.kanban-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}
+.kanban-column{background:#edf1f5;border-radius:5px;padding:14px 11px 12px;border-top:2px solid #a4b5c3;min-width:0}
+.kanban-column.late{border-top-color:#a66c56}.kanban-column.today{border-top-color:#b49764}.kanban-column.new{border-top-color:#6488a3}
+.kanban-column>header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.kanban-column h3{font-size:12px;font-weight:600}.kanban-column>header>span{font-size:10px;color:var(--muted);background:#dfe6ec;border-radius:4px;padding:1px 6px}
+.column-description{font-size:9px;color:var(--muted);line-height:1.7;margin:8px 0 14px;min-height:30px}
+.kanban-cards{display:flex;flex-direction:column;gap:11px}
+.kanban-card{padding:14px 12px 10px;border:1px solid #d7e0e8;border-radius:5px;background:#fff;min-width:0}
+.kanban-card-meta{display:flex;flex-direction:column;gap:5px;margin-bottom:11px}
+.kanban-card-meta>span{font-size:9px;color:#657f92;line-height:1.6}
+.kanban-card-meta>time{font-size:9px;color:var(--muted)}
+.kanban-column.late .kanban-card-meta>time{color:#9c634d}
+.kanban-card h4{margin:0 0 7px;font-size:12px;line-height:1.7;font-weight:600;overflow-wrap:anywhere}
+.kanban-card>p{font-size:9px;color:var(--muted);line-height:1.8}
+.kanban-card-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid #e8edf1;margin-top:14px;padding-top:7px}
+.kanban-card-footer>span{font-size:9px;color:var(--muted)}
+.kanban-card-footer>.text-button{font-size:10px;white-space:normal;text-align:right}
+.kanban-empty{padding:15px 4px;color:var(--muted);font-size:11px;line-height:1.7}
+.board-note{font-size:10px;color:var(--muted);line-height:1.9;margin-top:17px}
+.full-calendar-toolbar h3,.selected-day-sessions .section-title h3{text-transform:none}
+.full-calendar-toolbar h3::first-letter,.selected-day-sessions h3::first-letter{text-transform:uppercase}
+dialog[data-theme=mesa] .button-primary{background:#40637d;border-color:#40637d}
+dialog[data-theme=mesa] .dialog-timer{color:#2f5069}
+@media(max-width:1200px){.kanban-grid{gap:10px}.kanban-column{padding:12px 8px}.kanban-card{padding:12px 10px 9px}.kanban-column h3{font-size:11px}.kanban-card h4{font-size:11px}.desk-section{padding:22px}.desk-calendar-columns{grid-template-columns:minmax(0,1.4fr) minmax(225px,1fr);gap:18px}.full-calendar-toolbar h3{min-width:125px;font-size:12px}.desk-section-heading{gap:13px}.desk-section-heading h2{font-size:14px}.desk-section-heading p{font-size:10px}}
+@media(max-width:1000px){.kanban-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.kanban-column{padding:16px 13px}.kanban-card{padding:16px 13px 12px}.kanban-column h3{font-size:12px}.kanban-card h4{font-size:13px}.column-description{min-height:0;font-size:10px}.kanban-card-meta>span,.kanban-card>p{font-size:10px}.desk-calendar-columns{grid-template-columns:minmax(0,1fr)}.study-goals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 22px}.study-goals>.desk-section-heading{grid-column:1/-1}.study-goals .goal-item{padding-top:0}.study-goals .goal-item>div{display:block}.study-goals .goal-item strong{display:block;margin-top:12px}.goal-activity{grid-column:1/-1;max-width:340px;width:100%}.study-goals>.text-button{grid-column:1/-1;justify-self:start}.calendar-year-grid{gap:22px}.year-mini-days{font-size:9px}.year-month>strong{font-size:12px}.desk-shortcuts{gap:19px}}
+@media(max-width:760px){.desk-shortcuts{gap:10px 20px;margin-top:-5px;margin-bottom:22px;padding-bottom:14px}.desk-shortcuts a{font-size:10px;padding:6px 0}.desk-section{padding:21px 19px;margin-top:22px}.desk-section-heading{margin-bottom:20px;gap:14px;flex-wrap:wrap}.desk-section-heading h2{font-size:15px}.desk-section-heading p{font-size:11px;max-width:40ch}.activity-period select{font-size:10px;max-width:100%;padding:8px 26px 8px 10px}.activity-footer{align-items:start;flex-direction:column;font-size:10px;gap:13px;margin-top:13px}.activity-legend{font-size:9px}.activity-hint{display:block;font-size:9px;color:var(--muted);line-height:1.9;margin-top:14px;max-width:38ch}.activity-chart{--cell:11px}.activity-scroll{padding-bottom:10px}.calendar-mode>button{padding:5px 12px;font-size:10px}.full-calendar-toolbar{gap:7px;margin-top:3px}.full-calendar-toolbar h3{font-size:12px;min-width:148px;flex:1}.full-calendar-toolbar>.text-button{font-size:10px}.full-date{height:43px;font-size:13px}.full-weekdays{font-size:10px}.full-month-days{gap:6px 2px}.selected-day-sessions .section-title{flex-wrap:wrap;gap:5px}.selected-day-sessions .section-title h3{font-size:11px}.selected-day-sessions strong{font-size:12px}.selected-day-sessions small{font-size:10px}.calendar-year-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}.year-mini-days{font-size:9px}.year-month{padding:10px 8px}.year-month>strong{font-size:11px}.study-goals{display:block}.study-goals .goal-item{padding:21px 0}.study-goals .goal-item>div{display:flex}.study-goals .goal-item strong{margin:0;font-size:19px}.study-goals .goal-item h3{font-size:12px}.goal-activity{max-width:none}.kanban-grid{grid-template-columns:minmax(0,1fr);gap:20px}.kanban-column{padding:17px 14px}.kanban-column h3{font-size:14px}.column-description{font-size:11px;margin-bottom:16px}.kanban-card{padding:17px 15px 12px}.kanban-card-meta{flex-direction:row;justify-content:space-between;gap:15px;align-items:baseline}.kanban-card-meta>span{font-size:10px}.kanban-card-meta>time{font-size:9px;white-space:nowrap}.kanban-card h4{font-size:14px}.kanban-card>p{font-size:11px}.kanban-card-footer>span{font-size:10px}.kanban-card-footer>.text-button{font-size:11px;padding:7px 0}.board-note{font-size:10px;margin-top:19px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+</style>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Pular para o conteúdo</a>
+  <header class="review-bar" aria-label="Opções do protótipo">
+    <div class="review-title"><strong>Studia</strong><span>Estudo de layouts</span></div>
+    <div class="layout-options" role="group" aria-label="Escolher layout">
+      <button data-layout="biblioteca" aria-pressed="true">Biblioteca</button>
+      <button data-layout="agenda" aria-pressed="false">Agenda</button>
+      <button data-layout="mesa" aria-pressed="false">Mesa de estudo</button>
+    </div>
+    <div class="review-tools"><span class="demo-tag">Dados fictícios</span><button class="review-about" id="about-button">Sobre as opções</button></div>
+  </header>
+  <div id="app" data-theme="biblioteca"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <dialog id="dialog"><div id="dialog-content"></div></dialog>
+  <script>
+const $ = (selector, root = document) => root.querySelector(selector)
+const app = $('#app')
+const dialog = $('#dialog')
+const params = new URLSearchParams(location.search)
+const names = { biblioteca: 'Biblioteca', agenda: 'Agenda', mesa: 'Mesa de estudo' }
+const state = {
+  layout: names[params.get('layout')] ? params.get('layout') : 'mesa',
+  screen: ['painel', 'editais', 'topicos', 'usuarios', 'configurar'].includes(params.get('tela')) ? params.get('tela') : 'painel',
+  completed: new Set(), selected: 0, day: 3, week: 0, seconds: 1500, running: false,
+  query: '', subject: '', invitation: '', users: [{ email: 'marina@example.com', role: 'Administradora' }, { email: 'joana@example.com', role: 'Usuária' }],
+  activityYear: 'recent', calendarYear: 2026, calendarMonth: 9, calendarMode: 'month', selectedDate: '2026-10-15', boardSubject: '',
+  boardCompleted: new Set(), activeBoardId: null, boardTopic: '',
+}
+const tasks = [
+  { subject: 'Língua portuguesa', topic: 'Concordância verbal', detail: 'Concordância com sujeito composto', duration: 25, type: 'Revisão de 7 dias', questions: 20 },
+  { subject: 'Direito administrativo', topic: 'Atos administrativos', detail: 'Elementos, atributos e classificação', duration: 40, type: 'Conteúdo novo', questions: 15 },
+  { subject: 'Direito constitucional', topic: 'Direitos fundamentais', detail: 'Direitos e garantias individuais', duration: 30, type: 'Revisão de 14 dias', questions: 20 },
+  { subject: 'Informática', topic: 'Redes de computadores', detail: 'Protocolos e segurança de rede', duration: 25, type: 'Revisão de 3 dias', questions: 10 },
+]
+const subjects = [
+  { name: 'Língua portuguesa', done: 12, total: 24, accuracy: 82, topics: ['Interpretação de texto', 'Concordância verbal', 'Regência e crase'] },
+  { name: 'Direito administrativo', done: 8, total: 22, accuracy: 74, topics: ['Princípios da administração', 'Atos administrativos', 'Licitações e contratos'] },
+  { name: 'Direito constitucional', done: 6, total: 20, accuracy: 71, topics: ['Organização do Estado', 'Direitos fundamentais', 'Poderes da União'] },
+  { name: 'Informática', done: 2, total: 18, accuracy: 68, topics: ['Redes de computadores', 'Sistemas operacionais', 'Ferramentas de escritório'] },
+]
+const schedule = [
+  { day: 0, time: '09:00', top: 9, task: 0 }, { day: 1, time: '10:30', top: 23, task: 1 },
+  { day: 2, time: '08:30', top: 4, task: 2 }, { day: 3, time: '09:00', top: 9, task: 0 },
+  { day: 3, time: '14:00', top: 50, task: 1 }, { day: 3, time: '18:00', top: 82, task: 3 },
+  { day: 4, time: '10:00', top: 17, task: 2 }, { day: 5, time: '09:00', top: 9, task: 0 },
+]
+const paths = {
+  home: '<path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/>',
+  book: '<path d="M12 5C8 2 4 3 3 4v15c3-2 6-2 9 0 3-2 6-2 9 0V4c-3-2-6-2-9 1Zm0 0v14"/>',
+  file: '<path d="M5 3h9l5 5v13H5z"/><path d="M14 3v6h5M8 13h8M8 17h5"/>',
+  users: '<circle cx="9" cy="8" r="3"/><path d="M3 20v-3c0-4 12-4 12 0v3M16 5a3 3 0 0 1 0 6m3 9v-3a5 5 0 0 0-2-4"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="m9 3-1 3-3 1-2 5 2 5 3 1 1 3h6l1-3 3-1 2-5-2-5-3-1-1-3z"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>',
+  search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
+  play: '<path d="m9 5 11 7-11 7z"/>',
+  pause: '<path d="M8 5v14M16 5v14"/>',
+  check: '<path d="m5 12 4 4L19 6"/>',
+  plus: '<path d="M12 4v16M4 12h16"/>',
+  chevron: '<path d="m9 5 7 7-7 7"/>',
+  left: '<path d="m15 5-7 7 7 7"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6M17 2v6M3 11h18"/>',
+  bell: '<path d="M5 17h14l-2-4V8A5 5 0 0 0 7 8v5zm5 4h4"/>',
+  close: '<path d="m6 6 12 12M6 18 18 6"/>',
+  copy: '<rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V3H3v13h5"/>',
+  list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+}
+function icon(name, className = '') { return `<svg class="icon ${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] ?? paths.book}</svg>` }
+function escapeHtml(value) { return String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]) }
+function button(label, action, className = 'button', symbol = '') { return `<button class="${className}" data-action="${action}">${symbol ? icon(symbol) : ''}${label}</button>` }
+function toast(message) {
+  $('#toast').textContent = message
+  $('#toast').classList.add('visible')
+  clearTimeout(toast.timeout)
+  toast.timeout = setTimeout(() => $('#toast').classList.remove('visible'), 3200)
+}
+function nav() {
+  const items = [['painel', 'Início', 'home'], ['editais', 'Editais', 'file'], ['topicos', 'Tópicos', 'book'], ['usuarios', 'Usuários', 'users'], ['configurar', 'Configurar', 'settings']]
+  return items.map(([screen, name, symbol]) => `<button data-screen="${screen}" class="nav-link ${state.screen === screen ? 'active' : ''}" ${state.screen === screen ? 'aria-current="page"' : ''}>${icon(symbol)}<span>${name}</span></button>`).join('')
+}
+function brand() { return `<div class="brand">${icon('book')}<span>studia</span></div>` }
+function profile() { return `<div class="profile"><span class="avatar" aria-hidden="true">MD</span><div><strong>Marina Duarte</strong><span>Administradora</span></div></div>` }
+function frame(content) {
+  const horizontal = state.layout === 'agenda'
+  return `<div class="app-shell ${horizontal ? 'horizontal' : ''}">
+    <${horizontal ? 'header' : 'aside'} class="navigation">
+      ${brand()}<nav aria-label="Navegação de demonstração">${nav()}</nav>
+      <div class="nav-bottom">${!horizontal ? '<div class="plan-note"><span>Seu plano ativo</span><strong>Técnico administrativo</strong><span>Prova em 20 de novembro</span></div>' : ''}${profile()}</div>
+    </${horizontal ? 'header' : 'aside'}>
+    <main id="workspace" class="workspace" tabindex="-1">
+      <div class="workspace-top"><span>${({painel:'Área de estudos',editais:'Seus planos de estudo',topicos:'Conteúdo programático',usuarios:'Administração',configurar:'Preferências'})[state.screen]}</span><div><span class="today-label">Quinta-feira, 15 de outubro</span><button class="icon-button" data-action="notifications" aria-label="Ver lembretes">${icon('bell')}</button></div></div>
+      ${content}
+      <footer class="workspace-footer"><span>Studia</span><span>Conteúdo demonstrativo. As ações não alteram sua conta.</span></footer>
+    </main>
+  </div>`
+}
+function pageHeading(title, description, action = '') {
+  return `<header class="page-heading"><div><h1>${title}</h1><p>${description}</p></div>${action}</header>`
+}
+function progress(value, total) { return `<span class="progress-track" role="meter" aria-label="Conteúdo estudado" aria-valuenow="${value}" aria-valuemin="0" aria-valuemax="${total}"><span style="width:${Math.round(value / total * 100)}%"></span></span>` }
+function subjectRows() {
+  return subjects.map((subject, index) => `<button class="subject-row" data-subject="${index}"><span class="subject-spine spine-${index}"></span><span class="subject-name">${subject.name}<small>${subject.done} de ${subject.total} tópicos estudados</small></span>${progress(subject.done, subject.total)}<span class="accuracy">${subject.accuracy}%<small>de acertos</small></span>${icon('chevron')}</button>`).join('')
+}
+function taskRow(task, index, numbered = false) {
+  const checked = state.completed.has(index)
+  return `<div class="task-row ${checked ? 'completed' : ''}">
+    <button class="task-check ${checked ? 'checked' : ''}" data-complete="${index}" aria-label="${checked ? 'Reabrir' : 'Concluir'} ${task.topic}" aria-pressed="${checked}">${checked ? icon('check') : numbered ? `<span>${index + 1}</span>` : ''}</button>
+    <div class="task-text"><span>${task.subject}</span><strong>${task.topic}</strong><small>${task.type}</small></div>
+    <span class="duration">${task.duration} min</span><button class="icon-button task-start" data-study="${index}" aria-label="Estudar ${task.topic}">${icon('play')}</button>
+  </div>`
+}
+function calendar() {
+  return `<section class="mini-calendar"><div class="section-title"><h2>Outubro</h2><span>2026</span></div><div class="calendar-grid">${['S','T','Q','Q','S','S','D'].map(day=>`<span class="weekday">${day}</span>`).join('')}${Array.from({length:3},()=>'<span></span>').join('')}${Array.from({length:31},(_,i)=>`<span class="date ${i+1===15?'selected':''} ${[6,7,9,12,13,14].includes(i+1)?'studied':''}" ${i+1===15?'aria-label="Hoje, 15 de outubro"':''}>${i+1}</span>`).join('')}</div><p class="calendar-key"><i></i>Dia com estudo registrado</p></section>`
+}
+function weekBars() {
+  const minutes = [45, 50, 35, 70, 20, 0, 0]
+  return `<div class="week-bars" role="img" aria-label="Estudos da semana: segunda 45 minutos, terça 50, quarta 35, quinta 70, sexta 20, sábado e domingo sem registros.">${minutes.map((m,i)=>`<div><span class="bar ${i===3?'current':''}" style="height:${Math.max(m,3)}px" title="${m} minutos"></span><small>${['S','T','Q','Q','S','S','D'][i]}</small></div>`).join('')}</div>`
+}
+function biblioteca() {
+  const first = tasks[state.selected]
+  return `${pageHeading('Seu plano de estudos', 'Técnico administrativo · Universidade Federal', button('Registrar estudo','register','button button-outline','plus'))}
+    <div class="library-columns"><div class="library-main">
+      <section class="next-study"><div class="next-study-top"><span class="section-label">Próximo estudo</span><span>${icon('clock')}${first.duration} minutos</span></div><p class="subject-kicker">${first.subject}</p><h2>${first.topic}</h2><p>${first.detail}. Continue de onde parou.</p><div class="next-study-bottom">${button('Começar estudo','focus','button button-primary','play')}<span>${first.type}</span></div><div class="book-tab" aria-hidden="true"></div></section>
+      <section class="section schedule-list"><div class="section-title"><h2>Para estudar hoje</h2><span>${tasks.length-state.completed.size} tópicos pendentes</span></div>${tasks.map((task,index)=>taskRow(task,index)).join('')}</section>
+      <section class="section"><div class="section-title"><h2>Conteúdo do edital</h2><button class="text-button" data-screen="topicos">Ver todos os tópicos</button></div><div class="subject-list">${subjectRows()}</div></section>
+    </div><aside class="study-aside">${calendar()}<section class="weekly-summary"><div class="section-title"><h2>Sua semana</h2><button class="text-button" data-action="show-agenda">Ver agenda</button></div>${weekBars()}<div class="week-total"><strong>3h 40min</strong><span>de 5 horas planejadas</span></div>${progress(220,300)}</section><section class="exam-note">${icon('file')}<div><h2>36 dias até a prova</h2><p>20 de novembro de 2026</p><button class="text-button" data-screen="editais">Consultar edital</button></div></section></aside></div>`
+}
+function weekTitle() {
+  if (state.week === 0) return '12 a 18 de outubro'
+  const date = new Date(2026, 9, 12 + state.week * 7)
+  const end = new Date(2026, 9, 18 + state.week * 7)
+  return `${date.getDate()} de ${date.toLocaleDateString('pt-BR',{month:'long'})} a ${end.getDate()} de ${end.toLocaleDateString('pt-BR',{month:'long'})}`
+}
+function agenda() {
+  const days = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom']
+  const entries = state.week === 0 ? schedule.filter(item=>item.day===state.day) : []
+  return `${pageHeading('Sua semana, por assunto', 'Técnico administrativo · Universidade Federal', button('Registrar estudo','register','button button-primary','plus'))}
+    <div class="agenda-toolbar"><div><button class="icon-button" data-action="prev-week" aria-label="Semana anterior">${icon('left')}</button><h2>${weekTitle()}</h2><button class="icon-button" data-action="next-week" aria-label="Próxima semana">${icon('chevron')}</button></div>${button('Hoje','today','button button-small button-outline')}</div>
+    <div class="agenda-columns"><section class="week-calendar" aria-label="Agenda semanal"><div class="week-day-labels"><span class="time-header">Horário</span>${days.map((day,i)=>`<button class="day-heading ${state.day===i?'active':''}" data-day="${i}" aria-pressed="${state.day===i}"><span>${day}</span><strong>${new Date(2026,9,12+state.week*7+i).getDate()}</strong></button>`).join('')}</div>
+    <div class="week-grid"><div class="time-axis">${['08:00','10:00','12:00','14:00','16:00','18:00'].map(t=>`<span>${t}</span>`).join('')}</div>${days.map((_,day)=>`<div class="day-column ${day===state.day?'selected-day':''}">${state.week===0?schedule.filter(item=>item.day===day).map(item=>`<button class="calendar-event ${tasks[item.task].type==='Conteúdo novo'?'new-content':''}" style="top:${item.top}%" data-study="${item.task}"><time>${item.time}</time><strong>${tasks[item.task].subject}</strong><span>${tasks[item.task].topic}</span></button>`).join(''):''}</div>`).join('')}</div>
+    <div class="agenda-mobile-list">${entries.length?entries.map(item=>`<button class="mobile-session" data-study="${item.task}"><time>${item.time}</time><span><strong>${tasks[item.task].subject}</strong><small>${tasks[item.task].topic}</small></span>${icon('play')}</button>`).join(''):'<p class="empty-note">Nenhuma sessão planejada para este dia.</p>'}</div>
+    <div class="calendar-footer"><span><i class="legend-review"></i>Revisão</span><span><i class="legend-new"></i>Conteúdo novo</span><span>25 a 40 min por sessão</span></div></section>
+    <aside class="agenda-aside"><h2>${['Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado','Domingo'][state.day]}</h2><p class="subtle">${entries.length} sessões planejadas</p><div class="day-sessions">${entries.map(item=>`<button data-study="${item.task}"><time>${item.time}</time><strong>${tasks[item.task].topic}</strong><span>${tasks[item.task].subject}</span><small>${tasks[item.task].type} · ${tasks[item.task].duration} min</small></button>`).join('')||'<p class="empty-note">Deixe este dia livre ou registre uma sessão quando estudar.</p>'}</div><div class="week-total"><strong>3h 40min</strong><span>registradas nesta semana</span></div>${progress(220,300)}<p class="subtle">Sua meta é estudar 5 horas nesta semana.</p></aside></div>
+    <section class="agenda-bottom"><div><h2>Revisões em dia</h2><p>Você revisou 9 dos 12 tópicos planejados nesta semana.</p></div>${progress(9,12)}<button class="text-button" data-screen="topicos">Consultar tópicos</button></section>`
+}
+function timerText() { return `${String(Math.floor(state.seconds/60)).padStart(2,'0')}:${String(state.seconds%60).padStart(2,'0')}` }
+function currentStudy() { return state.boardTopic ? { ...tasks[state.selected], topic: state.boardTopic } : tasks[state.selected] }
+function dateKey(date) { return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}` }
+function dateFromKey(key) { const [y,m,d]=key.split('-').map(Number);return new Date(y,m-1,d,12) }
+function activityFor(date) {
+  const key=dateKey(date)
+  if(key>'2026-10-15')return {minutes:0,sessions:0}
+  const seed=(date.getMonth()*31+date.getDate()+date.getFullYear())%17
+  const sessions=seed%5===0||date.getDay()===0?0:seed%3+1
+  return {sessions,minutes:sessions*(seed%2===0?25:30)}
+}
+function activityMap() {
+  const start=state.activityYear==='recent'?new Date(2025,9,12,12):new Date(2025,0,1,12)
+  start.setDate(start.getDate()-start.getDay())
+  const end=state.activityYear==='recent'?new Date(2026,9,17,12):new Date(2026,0,3,12)
+  const days=[]
+  for(const date=new Date(start);date<=end;date.setDate(date.getDate()+1))days.push(new Date(date))
+  const columns=Math.ceil(days.length/7), labels=new Map()
+  days.forEach((date,index)=>{if(date.getDate()===1)labels.set(Math.floor(index/7),date.toLocaleDateString('pt-BR',{month:'short'}).replace('.',''))})
+  const studied=days.filter(date=>activityFor(date).sessions>0).length
+  const selected=activityFor(dateFromKey(state.selectedDate))
+  return `<section class="desk-section activity-section" id="atividade"><div class="desk-section-heading"><div><h2>Constância nos estudos</h2><p>${studied} dias com estudo registrado ${state.activityYear==='recent'?'nos últimos 12 meses':'em 2025'}.</p></div><label class="activity-period"><span class="sr-only">Período do mapa de atividade</span><select id="activity-year"><option value="recent" ${state.activityYear==='recent'?'selected':''}>Últimos 12 meses</option><option value="2025" ${state.activityYear==='2025'?'selected':''}>Ano de 2025</option></select></label></div>
+    <div class="activity-scroll"><div class="activity-chart" style="--weeks:${columns}"><div class="activity-months">${Array.from({length:columns},(_,i)=>`<span>${labels.get(i)??''}</span>`).join('')}</div><div class="activity-day-labels"><span>Dom</span><span></span><span>Ter</span><span></span><span>Qui</span><span></span><span>Sáb</span></div><div class="activity-cells">${days.map(date=>{const value=activityFor(date),key=dateKey(date),level=value.sessions===0?0:value.sessions===1?1:value.sessions===2?2:value.minutes>=90?4:3;const label=`${date.toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'})}: ${value.minutes} minutos em ${value.sessions} sessões`;return `<button class="activity-cell level-${level} ${key===state.selectedDate?'chosen':''} ${key>'2026-10-15'?'future-day':''}" data-activity-date="${key}" tabindex="${key===state.selectedDate||(state.activityYear==='2025'&&key==='2025-12-31')?0:-1}" title="${label}" aria-label="${label}"></button>`}).join('')}</div></div></div>
+    <div class="activity-footer"><p id="activity-detail" aria-live="polite">${dateFromKey(state.selectedDate).toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'})}: <strong>${selected.minutes} min</strong> em ${selected.sessions} ${selected.sessions===1?'sessão':'sessões'}.</p><div class="activity-legend"><span>Menos</span>${[0,1,2,3,4].map(level=>`<i class="level-${level}"></i>`).join('')}<span>Mais</span></div></div><p class="activity-hint">Deslize para ver todos os meses. Selecione um dia para consultar o calendário.</p></section>`
+}
+function calendarDays(year,month) {
+  const first=new Date(year,month,1,12),offset=(first.getDay()+6)%7
+  return Array.from({length:42},(_,i)=>new Date(year,month,1-offset+i,12))
+}
+function plansFor(date) {
+  const day=(date.getDay()+6)%7
+  return schedule.filter(item=>item.day===day)
+}
+function fullCalendar() {
+  const selected=dateFromKey(state.selectedDate),entries=plansFor(selected)
+  const title=state.calendarMode==='year'?String(state.calendarYear):new Date(state.calendarYear,state.calendarMonth,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'})
+  const grid=state.calendarMode==='year'?`<div class="calendar-year-grid">${Array.from({length:12},(_,month)=>`<button class="year-month ${month===state.calendarMonth?'current-month':''}" data-calendar-month="${month}"><strong>${new Date(state.calendarYear,month,1).toLocaleDateString('pt-BR',{month:'long'})}</strong><span class="year-mini-days">${calendarDays(state.calendarYear,month).map(date=>`<span class="${date.getMonth()!==month?'off-month':''} ${dateKey(date)==='2026-10-15'?'mini-today':''}">${date.getDate()}</span>`).join('')}</span></button>`).join('')}</div>`:`<div class="full-calendar-grid"><div class="full-weekdays">${['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map(day=>`<span>${day}</span>`).join('')}</div><div class="full-month-days">${calendarDays(state.calendarYear,state.calendarMonth).map(date=>{const key=dateKey(date),count=plansFor(date).length;return `<button data-calendar-date="${key}" class="full-date ${date.getMonth()!==state.calendarMonth?'off-month':''} ${key===state.selectedDate?'selected':''} ${key==='2026-10-15'?'today':''}"><span>${date.getDate()}</span><span class="date-markers" aria-hidden="true">${Array.from({length:Math.min(count,3)},()=>'<i></i>').join('')}</span><span class="sr-only">${date.toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}, ${count} sessões previstas</span></button>`}).join('')}</div></div>`
+  return `<section class="desk-section revision-calendar" id="calendario"><div class="desk-section-heading"><div><h2>Calendário de revisões</h2><p>Consulte os assuntos previstos para cada dia.</p></div><div class="calendar-mode" role="group" aria-label="Visão do calendário"><button data-calendar-mode="month" aria-pressed="${state.calendarMode==='month'}">Mês</button><button data-calendar-mode="year" aria-pressed="${state.calendarMode==='year'}">Ano</button></div></div><div class="full-calendar-toolbar"><button class="icon-button" data-action="calendar-prev" aria-label="Período anterior">${icon('left')}</button><h3>${title}</h3><button class="icon-button" data-action="calendar-next" aria-label="Próximo período">${icon('chevron')}</button><button class="text-button" data-action="calendar-today">Hoje</button></div>${grid}<div class="selected-day-sessions"><div class="section-title"><h3>${selected.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})}</h3><span>${entries.length} sessões previstas</span></div>${entries.length?entries.map(item=>`<button data-study="${item.task}"><time>${item.time}</time><span><strong>${tasks[item.task].topic}</strong><small>${tasks[item.task].subject}</small></span>${icon('play')}</button>`).join(''):'<p class="subtle">Nenhuma sessão prevista. Você pode usar este dia para descansar ou registrar um estudo.</p>'}</div></section>`
+}
+function studyGoals() {
+  return `<aside class="desk-section study-goals"><div class="desk-section-heading"><div><h2>Metas da semana</h2><p>12 a 18 de outubro</p></div>${icon('clock')}</div><div class="goal-item"><div><h3>Tempo de estudo</h3><strong>3h 40 <span>/ 5h</span></strong></div>${progress(220,300)}<p>Falta 1h 20 para a meta.</p></div><div class="goal-item"><div><h3>Questões resolvidas</h3><strong>76 <span>/ 100</span></strong></div>${progress(76,100)}<p>24 questões até sua meta.</p></div><div class="goal-item"><div><h3>Revisões da semana</h3><strong>9 <span>/ 12</span></strong></div>${progress(9,12)}<p>3 revisões previstas para hoje.</p></div><div class="goal-activity"><h3>Tempo por dia</h3>${weekBars()}</div><button class="text-button" data-screen="configurar">Ajustar minha rotina</button></aside>`
+}
+function revisionBoard() {
+  const cards=[
+    {id:'late-1',task:2,status:'late',date:'13 out',topic:'Direitos fundamentais',note:'Revisão de 14 dias'},
+    {id:'late-2',task:3,status:'late',date:'14 out',topic:'Redes de computadores',note:'Revisão de 3 dias'},
+    {id:'today-1',task:0,status:'today',date:'Hoje',topic:'Concordância verbal',note:'Revisão de 7 dias'},
+    {id:'today-2',task:2,status:'today',date:'Hoje',topic:'Organização do Estado',note:'Revisão de 30 dias'},
+    {id:'new-1',task:1,status:'new',date:'Sem revisão anterior',topic:'Atos administrativos',note:'Primeiro estudo'},
+    {id:'new-2',task:3,status:'new',date:'Sem revisão anterior',topic:'Sistemas operacionais',note:'Primeiro estudo'},
+    {id:'next-1',task:0,status:'next',date:'18 out',topic:'Interpretação de texto',note:'Revisão de 7 dias'},
+    {id:'next-2',task:1,status:'next',date:'19 out',topic:'Princípios da administração',note:'Revisão de 14 dias'},
+  ].map(card=>(state.boardCompleted.has(card.id)||(state.completed.has(card.task)&&card.topic===tasks[card.task].topic))&&card.status!=='next'?{...card,status:'next',date:'22 out',note:'Estudo registrado nesta demonstração'}:card).filter(card=>!state.boardSubject||tasks[card.task].subject===state.boardSubject)
+  const groups=[['late','Atrasadas','Retome estas revisões primeiro.'],['today','Para hoje','Revisões previstas para hoje.'],['new','Conteúdo novo','Assuntos que ainda não estudou.'],['next','Próximas revisões','Agendadas pelo ciclo de revisão.']]
+  return `<section class="desk-section revision-board" id="cronograma"><div class="desk-section-heading"><div><h2>Quadro de revisões</h2><p>Comece pelas atrasadas, depois pelas de hoje e pelo conteúdo novo.</p></div><label class="activity-period"><span class="sr-only">Filtrar quadro por matéria</span><select id="board-subject"><option value="">Todas as matérias</option>${subjects.map(subject=>`<option ${state.boardSubject===subject.name?'selected':''}>${subject.name}</option>`).join('')}</select></label></div><div class="kanban-grid">${groups.map(([status,name,description])=>{const items=cards.filter(card=>card.status===status);return `<section class="kanban-column ${status}"><header><h3>${name}</h3><span>${items.length}</span></header><p class="column-description">${description}</p><div class="kanban-cards">${items.map(card=>`<article class="kanban-card"><div class="kanban-card-meta"><span>${tasks[card.task].subject}</span><time>${card.date}</time></div><h4>${card.topic}</h4><p>${card.note}</p><div class="kanban-card-footer"><span>${tasks[card.task].duration} min</span><button class="text-button" data-board-topic="${escapeHtml(card.topic)}" data-board-id="${card.id}" data-board-task="${card.task}">${status==='next'?'Consultar sessão':'Estudar'}</button></div></article>`).join('')||'<p class="kanban-empty">Nenhum tópico nesta coluna.</p>'}</div></section>`}).join('')}</div><p class="board-note">As colunas acompanham as datas de revisão. Ao registrar um estudo, a próxima revisão aparece no cronograma.</p></section>`
+}
+function mesa() {
+  const task = currentStudy()
+  return `${pageHeading('Mesa de estudo', 'Técnico administrativo · Universidade Federal', '<span class="focus-date">Quinta, 15 de outubro</span>')}
+    <nav class="desk-shortcuts" aria-label="Seções da mesa de estudo"><a href="#sessao">Sessão de foco</a><a href="#atividade">Constância</a><a href="#calendario">Calendário</a><a href="#cronograma">Quadro de revisões</a><a href="#historico">Histórico</a></nav><div id="sessao" class="section-anchor"></div>
+    <div class="desk-columns"><section class="focus-workspace"><div class="focus-topic"><span>${icon('book')}${task.subject}</span><span class="focus-marker">${task.type}</span></div><h2>${task.topic}</h2><p>${task.detail}</p><div class="timer-zone"><p>Tempo de foco</p><div class="timer-value" aria-live="off">${timerText()}</div><div class="duration-options" role="group" aria-label="Duração da sessão">${[25,40,50].map(m=>`<button data-duration="${m}" aria-pressed="${state.seconds===m*60}">${m} min</button>`).join('')}</div></div><div class="focus-controls">${button(state.running?'Pausar sessão':'Iniciar sessão','toggle-timer','button button-focus',state.running?'pause':'play')}${button('Concluir estudo','register','button button-on-dark')}</div><div class="focus-footnote"><span>${task.questions} questões sugeridas</span><span>Conteúdo do edital, item 2.${state.selected+1}</span></div></section>
+    <aside class="desk-queue"><div class="section-title"><h2>Fila de hoje</h2><span>${tasks.length-state.completed.size} pendentes</span></div>${tasks.map((item,index)=>`<button class="queue-item ${state.selected===index?'selected':''}" data-select="${index}"><span class="queue-number">${state.completed.has(index)?icon('check'):index+1}</span><div><small>${item.subject}</small><strong>${item.topic}</strong><span>${item.duration} min · ${item.type}</span></div></button>`).join('')}<div class="desk-plan"><h3>Seu edital</h3><div><strong>28 <span>/ 84 tópicos</span></strong><span>33%</span></div>${progress(28,84)}<button class="text-button" data-screen="topicos">Ver conteúdo completo</button></div></aside></div>
+    ${activityMap()}<div class="desk-calendar-columns">${fullCalendar()}${studyGoals()}</div>${revisionBoard()}
+    <section class="section recent-sessions" id="historico"><div class="section-title"><h2>Estudos recentes</h2>${button('Registrar estudo','register','text-button','plus')}</div><div class="table-scroll"><table><thead><tr><th>Quando</th><th>Assunto</th><th>Atividade</th><th>Tempo</th><th>Acertos</th></tr></thead><tbody><tr><td>Hoje, 09:00</td><td><strong>Interpretação de texto</strong><span>Língua portuguesa</span></td><td>Revisão</td><td>25 min</td><td>17 de 20</td></tr><tr><td>Ontem, 14:30</td><td><strong>Princípios da administração</strong><span>Direito administrativo</span></td><td>Questões</td><td>40 min</td><td>12 de 15</td></tr><tr><td>Terça, 10:00</td><td><strong>Organização do Estado</strong><span>Direito constitucional</span></td><td>Leitura e questões</td><td>30 min</td><td>14 de 20</td></tr></tbody></table></div></section>`
+}
+function editais() {
+  return `${pageHeading('Seus editais', 'Escolha o plano que organiza seus estudos.',button('Importar edital','import','button button-primary','plus'))}<section class="active-notice"><div class="notice-file">${icon('file')}</div><div><span class="status-label">Plano ativo</span><h2>Técnico administrativo</h2><p>Universidade Federal · Edital 02/2026</p><p class="subtle">Prova em 20 de novembro de 2026</p></div><div class="notice-progress"><strong>28 de 84 tópicos</strong>${progress(28,84)}<span>4 matérias no plano</span></div><button class="button button-outline" data-screen="topicos">Abrir conteúdo</button></section><section class="section"><div class="section-title"><h2>Outros planos</h2><span>2 editais</span></div><div class="notice-row"><div>${icon('file')}<div><h3>Assistente em administração</h3><p>Instituto Federal · Importado em 28 de setembro</p></div></div><span class="status-label status-neutral">Em revisão</span><button class="text-button" data-action="review-notice">Revisar conteúdo</button></div><div class="notice-row"><div>${icon('file')}<div><h3>Técnico judiciário</h3><p>Tribunal Regional · Importado em 10 de agosto</p></div></div><span class="status-label status-neutral">Arquivado</span><button class="text-button" data-action="archive-notice">Consultar</button></div></section><div class="help-note">${icon('book')}<p>Ao ativar outro edital, seu histórico de estudos continua salvo no plano anterior.</p></div>`
+}
+function filteredTopics() {
+  return subjects.flatMap((subject,s)=>subject.topics.map((topic,t)=>({subject,topic,s,t}))).filter(item=>(!state.subject||item.subject.name===state.subject)&&(!state.query||`${item.topic} ${item.subject.name}`.toLocaleLowerCase('pt-BR').includes(state.query.toLocaleLowerCase('pt-BR'))))
+}
+function topicTableRows() {
+  const rows = filteredTopics()
+  return rows.length ? rows.map(({subject,topic,s,t})=>`<tr><td><strong>${topic}</strong><span>${subject.name}</span></td><td><span class="status-label ${t===1?'status-due':'status-neutral'}">${t===1?'Revisar hoje':t===0?'Em dia':'Não estudado'}</span></td><td>${t===2?'Sem questões':`${subject.accuracy}%`}</td><td>${t===1?'Hoje':t===0?'19 de outubro':'Após estudar'}</td><td><button class="text-button" data-study="${s}">${t===2?'Estudar':'Revisar'}</button></td></tr>`).join('') : '<tr><td colspan="5" class="empty-note">Nenhum tópico encontrado. Tente outro termo ou matéria.</td></tr>'
+}
+function topicos() {
+  return `${pageHeading('Conteúdo do edital', 'Técnico administrativo · 4 matérias e 84 tópicos',button('Registrar estudo','register','button button-outline','plus'))}<div class="topic-toolbar"><label class="search-field">${icon('search')}<input id="topic-search" type="search" placeholder="Buscar tópico ou matéria" aria-label="Buscar tópico ou matéria" value="${escapeHtml(state.query)}"></label><label class="select-field"><span>Matéria</span><select id="subject-filter"><option value="">Todas as matérias</option>${subjects.map(subject=>`<option ${state.subject===subject.name?'selected':''}>${subject.name}</option>`).join('')}</select></label><span class="topic-count" id="topic-count">${filteredTopics().length} tópicos na amostra</span></div><div class="topic-summary"><span><strong>28</strong> estudados</span><span><strong>3</strong> revisões para hoje</span><span><strong>76%</strong> de acertos no plano</span></div><section class="table-surface"><div class="table-scroll"><table class="topics-table"><thead><tr><th>Tópico</th><th>Situação</th><th>Acertos</th><th>Próxima revisão</th><th><span class="sr-only">Ação</span></th></tr></thead><tbody id="topic-rows">${topicTableRows()}</tbody></table></div></section>`
+}
+function usuarios() {
+  return `${pageHeading('Usuários', 'Crie acessos para outras pessoas. Cada conta mantém seus próprios estudos.')}<div class="admin-columns"><section class="form-surface"><h2>Nova conta</h2><p class="subtle">A pessoa escolhe uma nova senha no primeiro acesso.</p><form id="user-form"><label>E-mail<input type="email" name="email" required placeholder="pessoa@exemplo.com" autocomplete="off"></label><button class="button button-primary" type="submit">Criar conta e gerar mensagem</button><p class="form-note">Demonstração. Nenhum acesso real será criado.</p></form></section><section class="user-list"><div class="section-title"><h2>Contas cadastradas</h2><span>${state.users.length} pessoas</span></div>${state.users.map(user=>`<div class="user-row"><span class="avatar">${escapeHtml(user.email.slice(0,2).toUpperCase())}</span><div><strong>${escapeHtml(user.email)}</strong><span>${user.role}</span></div>${icon('check')}</div>`).join('')}<div class="help-note">${icon('users')}<p>Somente administradores podem criar contas. O cadastro público está desabilitado.</p></div></section></div>`
+}
+function configurar() {
+  return `${pageHeading('Sua rotina de estudos', 'Defina um ritmo que caiba na sua semana.')}<form id="settings-form" class="settings-form"><section class="form-surface"><h2>Disponibilidade</h2><p class="subtle">Quantas horas você pretende estudar em cada dia?</p><div class="availability">${['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'].map((day,i)=>`<label>${day}<input aria-label="Horas na ${day}" name="day-${i}" type="number" min="0" max="24" step="0.5" value="${i<5?1:0}"><span>horas</span></label>`).join('')}</div></section><section class="form-surface settings-goals"><h2>Metas da semana</h2><label>Questões por semana<input name="questions" type="number" min="0" value="100"></label><label>Tempo de estudo<input name="hours" type="number" min="0" max="168" value="5"><span class="subtle">horas por semana</span></label></section><button class="button button-primary" type="submit">Salvar rotina de demonstração</button></form>`
+}
+function render() {
+  app.dataset.theme = state.layout
+  app.innerHTML = frame(state.screen==='painel'?({biblioteca,agenda,mesa})[state.layout]():({editais,topicos,usuarios,configurar})[state.screen]())
+  document.querySelectorAll('[data-layout]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.layout===state.layout)))
+  const query = new URLSearchParams({layout:state.layout,tela:state.screen})
+  history.replaceState(null,'',`${location.pathname}?${query}${location.hash}`)
+  document.title = `Studia | ${names[state.layout]} | ${state.screen}`
+}
+function showDialog(content, className = '') {
+  dialog.dataset.theme=state.layout
+  $('#dialog-content').innerHTML = `<button class="dialog-close icon-button" data-action="close" aria-label="Fechar janela">${icon('close')}</button>${content}`
+  dialog.className = className
+  if (!dialog.open) dialog.showModal()
+}
+function focusDialog() {
+  const task = currentStudy()
+  showDialog(`<span class="section-label">Sessão de estudo</span><h2>${task.topic}</h2><p>${task.subject}</p><div class="dialog-timer timer-value">${timerText()}</div><div class="dialog-actions">${button(state.running?'Pausar sessão':'Iniciar sessão','toggle-timer','button button-primary',state.running?'pause':'play')}${button('Registrar resultado','register','button button-outline')}</div><p class="form-note">O cronômetro é demonstrativo e não salva uma sessão real.</p>`)
+}
+function about() {
+  showDialog(`<h2>Três formas de organizar o mesmo estudo</h2><p class="subtle">Compare a navegação, a leitura e a prioridade das informações.</p><div class="concept-list"><article><h3>Biblioteca</h3><p>Lista de estudos, índice por matéria e navegação lateral. Boa para consultar o edital e revisar sem perder o contexto.</p><button class="text-button" data-layout="biblioteca">Explorar Biblioteca</button></article><article><h3>Agenda</h3><p>A semana ocupa o centro. Boa para distribuir sessões nos dias disponíveis e entender o que vem depois.</p><button class="text-button" data-layout="agenda">Explorar Agenda</button></article><article><h3>Mesa de estudo</h3><p>Uma sessão em destaque, com cronômetro e fila de assuntos. Boa para manter o site aberto durante o estudo.</p><button class="text-button" data-layout="mesa">Explorar Mesa de estudo</button></article></div><p class="form-note">Todas as propostas incluem editais, tópicos, administração de contas e configurações. Nenhuma foi aplicada ao site em uso.</p>`, 'about-dialog')
+}
+function registerDialog() {
+  showDialog(`<h2>Registrar estudo</h2><p class="subtle">${tasks[state.selected].subject}: ${currentStudy().topic}</p><form id="session-form"><label>Tempo estudado, em minutos<input type="number" min="1" max="720" name="minutes" value="${tasks[state.selected].duration}" required></label><div class="form-pair"><label>Acertos<input type="number" name="correct" min="0" value="15" required></label><label>Erros<input type="number" name="wrong" min="0" value="5" required></label></div><button type="submit" class="button button-primary">Registrar nesta demonstração</button></form>`)
+}
+document.addEventListener('click', event => {
+  const target = event.target.closest('button')
+  if (!target) return
+  if (target.dataset.layout) { state.layout=target.dataset.layout; if(dialog.open)dialog.close(); render(); return }
+  if (target.dataset.screen) { state.screen=target.dataset.screen; render(); $('#workspace').focus({preventScroll:true}); window.scrollTo({top:0}); return }
+  if (target.dataset.boardTopic) { state.selected=Number(target.dataset.boardTask);state.boardTopic=target.dataset.boardTopic;state.activeBoardId=target.dataset.boardId;state.running=false;state.seconds=tasks[state.selected].duration*60;focusDialog();return }
+  if (target.dataset.activityDate) { const date=dateFromKey(target.dataset.activityDate);state.selectedDate=target.dataset.activityDate;state.calendarYear=date.getFullYear();state.calendarMonth=date.getMonth();state.calendarMode='month';const scroll=window.scrollY;render();window.scrollTo({top:scroll});return }
+  if (target.dataset.calendarDate) { state.selectedDate=target.dataset.calendarDate;render();return }
+  if (target.dataset.calendarMonth!==undefined) { state.calendarMonth=Number(target.dataset.calendarMonth);state.calendarMode='month';render();return }
+  if (target.dataset.calendarMode) { state.calendarMode=target.dataset.calendarMode;render();return }
+  if (target.dataset.complete !== undefined) { const index=Number(target.dataset.complete); state.completed.has(index)?state.completed.delete(index):state.completed.add(index); render(); return }
+  if (target.dataset.study !== undefined) { state.boardTopic='';state.activeBoardId=null;state.selected=Number(target.dataset.study); state.seconds=tasks[state.selected].duration*60; state.running=false; focusDialog(); return }
+  if (target.dataset.select !== undefined) { state.boardTopic='';state.activeBoardId=null;state.selected=Number(target.dataset.select); state.seconds=tasks[state.selected].duration*60; state.running=false; render(); return }
+  if (target.dataset.subject !== undefined) { state.subject=subjects[Number(target.dataset.subject)].name; state.screen='topicos'; render(); return }
+  if (target.dataset.day !== undefined) { state.day=Number(target.dataset.day); render(); return }
+  if (target.dataset.duration) { state.seconds=Number(target.dataset.duration)*60; state.running=false; render(); return }
+  const action=target.dataset.action
+  if (action==='close') dialog.close()
+  if (action==='calendar-prev'||action==='calendar-next') { const step=action==='calendar-next'?1:-1;if(state.calendarMode==='year')state.calendarYear+=step;else{const date=new Date(state.calendarYear,state.calendarMonth+step,1);state.calendarYear=date.getFullYear();state.calendarMonth=date.getMonth()}render() }
+  if (action==='calendar-today') {state.calendarYear=2026;state.calendarMonth=9;state.selectedDate='2026-10-15';state.calendarMode='month';render()}
+  if (action==='focus') focusDialog()
+  if (action==='toggle-timer') { state.running=!state.running; if(dialog.open)focusDialog(); else render() }
+  if (action==='register') registerDialog()
+  if (action==='prev-week'||action==='next-week') { state.week+=action==='next-week'?1:-1; render() }
+  if (action==='today') { state.week=0;state.day=3;render() }
+  if (action==='show-agenda') { state.layout='agenda';render() }
+  if (action==='notifications') showDialog(`<h2>Seus lembretes</h2><p>Há 3 revisões previstas para hoje.</p><div class="reminder-list">${tasks.filter(task=>task.type!=='Conteúdo novo').map(task=>`<p><strong>${task.topic}</strong><span>${task.subject}</span></p>`).join('')}</div>${button('Ver tópicos','open-topics','button button-primary')}`)
+  if (action==='open-topics'||action==='review-notice') { dialog.close();state.screen='topicos';state.subject='';render() }
+  if (action==='archive-notice') showDialog(`<h2>Técnico judiciário</h2><p>Plano arquivado, com 42 tópicos estudados e 18 sessões registradas.</p><p class="subtle">O histórico continua disponível. Esta é uma amostra visual do arquivo.</p>`)
+  if (action==='import') showDialog(`<h2>Importar edital</h2><p class="subtle">Prévia do formulário. O arquivo não será enviado a nenhum servidor.</p><form id="import-form"><label>Nome do plano<input name="title" required placeholder="Ex.: Técnico administrativo"></label><label>Arquivo PDF<input name="file" type="file" accept="application/pdf"></label><button type="submit" class="button button-primary">Visualizar próximo passo</button></form>`)
+  if (action==='copy-invitation') {
+    navigator.clipboard.writeText(state.invitation).then(()=>toast('Mensagem copiada. Este acesso é fictício.')).catch(()=>toast('Selecione a mensagem e copie manualmente.'))
+  }
+})
+$('#about-button').addEventListener('click',about)
+dialog.addEventListener('click', event=>{ if(event.target===dialog && (event.clientX<dialog.getBoundingClientRect().left||event.clientX>dialog.getBoundingClientRect().right||event.clientY<dialog.getBoundingClientRect().top||event.clientY>dialog.getBoundingClientRect().bottom)) dialog.close() })
+document.addEventListener('input', event=>{
+  if(event.target.id==='topic-search') { state.query=event.target.value;$('#topic-rows').innerHTML=topicTableRows();$('#topic-count').textContent=`${filteredTopics().length} tópicos na amostra` }
+})
+document.addEventListener('change',event=>{
+  if(event.target.id==='subject-filter'){state.subject=event.target.value;$('#topic-rows').innerHTML=topicTableRows();$('#topic-count').textContent=`${filteredTopics().length} tópicos na amostra`}
+  if(event.target.id==='activity-year'){state.activityYear=event.target.value;if(state.activityYear==='2025')state.selectedDate='2025-12-31';render()}
+  if(event.target.id==='board-subject'){state.boardSubject=event.target.value;render()}
+})
+document.addEventListener('keydown',event=>{
+  if(!event.target.matches('.activity-cell'))return
+  const delta={ArrowUp:-1,ArrowDown:1,ArrowLeft:-7,ArrowRight:7}[event.key]
+  if(delta===undefined)return
+  event.preventDefault();const cells=Array.from(document.querySelectorAll('.activity-cell')),index=cells.indexOf(event.target),next=cells[index+delta]
+  if(next){event.target.tabIndex=-1;next.tabIndex=0;next.focus()}
+})
+document.addEventListener('submit',event=>{
+  event.preventDefault()
+  const data=new FormData(event.target)
+  if(event.target.id==='session-form') { if(state.activeBoardId)state.boardCompleted.add(state.activeBoardId);if(!state.activeBoardId||state.boardTopic===tasks[state.selected].topic)state.completed.add(state.selected);state.running=false;dialog.close();render();toast(`${data.get('minutes')} minutos registrados na demonstração.`) }
+  if(event.target.id==='settings-form') toast('Rotina atualizada apenas nesta demonstração.')
+  if(event.target.id==='import-form') showDialog(`<h2>Revisar conteúdo extraído</h2><p><strong>${escapeHtml(data.get('title'))}</strong></p><p class="subtle">Na aplicação, esta etapa permite conferir as matérias e os tópicos antes de ativar o plano.</p>${button('Ver exemplo de tópicos','open-topics','button button-primary')}`)
+  if(event.target.id==='user-form') {
+    const email=String(data.get('email')).trim().toLowerCase()
+    if(state.users.some(user=>user.email===email)){toast('Este e-mail já está na lista de demonstração.');return}
+    state.users.push({email,role:'Aguardando troca de senha'})
+    const random=crypto.getRandomValues(new Uint8Array(8));const password=Array.from(random,byte=>byte.toString(16).padStart(2,'0')).join('')+'Aa1!'
+    state.invitation=`Exemplo de mensagem, sem acesso real.\n\nOlá! Sua conta no Studia está pronta.\nAcesso: https://studia.exemplo/entrar\nLogin: ${email}\nSenha temporária: ${password}\n\nNo primeiro acesso, escolha uma nova senha.`
+    render();showDialog(`<h2>Mensagem de acesso</h2><p class="subtle">Exemplo para copiar e enviar. Nenhuma conta real foi criada.</p><textarea readonly rows="9" aria-label="Mensagem de acesso fictícia">${escapeHtml(state.invitation)}</textarea>${button('Copiar mensagem','copy-invitation','button button-primary','copy')}`)
+  }
+})
+setInterval(()=>{
+  if(!state.running)return
+  if(state.seconds>0)state.seconds--
+  document.querySelectorAll('.timer-value').forEach(element=>element.textContent=timerText())
+  if(state.seconds===0){state.running=false;toast('Tempo de foco concluído. Registre seu estudo.');if(dialog.open)focusDialog();else render()}
+},1000)
+render()
+
+</script>
+</body>
+</html>

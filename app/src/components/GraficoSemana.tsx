@@ -1,14 +1,15 @@
+import { lerData as diaCalendario } from '../lib/datas'
 import { useMemo, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { useEstudo } from '../context/EstudoContext'
-import { DIAS_SEMANA_ABREV, agruparSessoesPorDia, diasDaSemana, sessoesNoIntervalo } from '../lib/semana'
+import { DIAS_SEMANA_ABREV, agruparSessoesPorDia, diasDaSemana, sessoesNoIntervalo, taxaAcertoGlobal } from '../lib/semana'
 import { inicioDoDia } from '../lib/curva'
 import { SUBJECT_STYLES } from '../lib/subjectStyles'
-import { IconChartBar, IconBook } from './icons'
+import { IconChartBar, IconBook, IconArrowUp } from './icons'
 
 const LARGURA = 520
 const ALTURA = 224
-const MARGEM = { top: 14, right: 10, bottom: 54, left: 30 }
+const MARGEM = { top: 20, right: 14, bottom: 60, left: 40 }
 const ALTURA_UTIL = ALTURA - MARGEM.top - MARGEM.bottom
 const BASELINE_Y = ALTURA - MARGEM.bottom
 const RAIO_BOLHA_MIN = 3
@@ -21,8 +22,8 @@ function escalaX(index: number, total: number) {
 }
 
 export default function GraficoSemana() {
-  const { materias, sessoes } = useEstudo()
-  const hoje = useMemo(() => inicioDoDia(new Date()), [])
+  const { materias, sessoes, hoje: hojeEstudo } = useEstudo()
+  const hoje = useMemo(() => inicioDoDia(diaCalendario(hojeEstudo)), [hojeEstudo])
   const [offsetSemana, setOffsetSemana] = useState(0)
 
   const referencia = useMemo(() => {
@@ -87,15 +88,12 @@ export default function GraficoSemana() {
   const totalHoras = horas.reduce((s, h) => s + h, 0)
   const totalQuestoes = agregados.reduce((s, a) => s + a.questoes, 0)
   const diasComQuestoes = agregados.filter((a) => a.questoes > 0)
-  const mediaDesempenho =
-    diasComQuestoes.length === 0
-      ? 0
-      : Math.round(diasComQuestoes.reduce((s, a) => s + a.desempenho, 0) / diasComQuestoes.length)
+  const mediaDesempenho = taxaAcertoGlobal(agregados)
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-navy-900 p-4">
+    <div className="rounded-lg border border-line bg-surface p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-muted">
           <IconChartBar className="h-4 w-4" />
           Sua semana
         </h2>
@@ -103,31 +101,31 @@ export default function GraficoSemana() {
           <button
             type="button"
             onClick={() => setOffsetSemana((o) => o - 1)}
-            className="rounded-lg px-2 py-0.5 text-slate-400 transition-colors hover:bg-navy-800 hover:text-white"
+            className="rounded-lg px-2 py-0.5 text-muted transition-colors hover:bg-hover hover:text-ink"
             aria-label="Semana anterior"
           >
-            ‹
+            <IconArrowUp className="h-4 w-4 -rotate-90" />
           </button>
-          <span className="min-w-[6.5rem] text-center text-xs text-slate-500">
+          <span className="min-w-[6.5rem] text-center text-xs text-muted">
             {offsetSemana === 0 ? 'esta semana' : offsetSemana < 0 ? `${-offsetSemana}sem atrás` : `em ${offsetSemana}sem`}
           </span>
           <button
             type="button"
             onClick={() => setOffsetSemana((o) => Math.min(0, o + 1))}
             disabled={offsetSemana === 0}
-            className="rounded-lg px-2 py-0.5 text-slate-400 transition-colors hover:bg-navy-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+            className="rounded-lg px-2 py-0.5 text-muted transition-colors hover:bg-hover hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
             aria-label="Próxima semana"
           >
-            ›
+            <IconArrowUp className="h-4 w-4 rotate-90" />
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-      <div className="rounded-xl bg-navy-850 p-4 lg:col-span-2">
+      <div className="min-w-0 rounded-md bg-soft p-4 lg:col-span-2">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Horas, questões e desempenho</p>
-          <div className="flex items-center gap-3 text-[11px] text-slate-400">
+          <p className="text-xs font-semibold text-muted">Horas, questões e desempenho</p>
+          <div className="flex items-center gap-3 text-xs text-muted">
             <span className="flex items-center gap-1.5">
               <span className="inline-block h-2 w-2 rounded-sm bg-brand-600" />
               Horas
@@ -143,9 +141,10 @@ export default function GraficoSemana() {
           </div>
         </div>
 
+        <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Gráfico semanal, role para ver todos os dias">
         <svg
           viewBox={`0 0 ${LARGURA} ${ALTURA}`}
-          className="mx-auto w-full max-w-[560px]"
+          className="mx-auto w-full min-w-[520px] max-w-[560px]"
           role="img"
           aria-label="Horas de estudo, questões respondidas e desempenho por dia"
         >
@@ -153,8 +152,8 @@ export default function GraficoSemana() {
             const y = BASELINE_Y - (m / axisMaxHoras) * ALTURA_UTIL
             return (
               <g key={m}>
-                <line x1={MARGEM.left} x2={LARGURA - MARGEM.right} y1={y} y2={y} stroke="rgba(255,255,255,0.06)" />
-                <text x={MARGEM.left - 6} y={y + 3} textAnchor="end" fontSize="9" fill="rgba(255,255,255,0.4)">
+                <line x1={MARGEM.left} x2={LARGURA - MARGEM.right} y1={y} y2={y} stroke="var(--color-line)" />
+                <text x={MARGEM.left - 6} y={y + 3} textAnchor="end" fontSize="14" fill="var(--color-muted)">
                   {m}h
                 </text>
               </g>
@@ -165,7 +164,7 @@ export default function GraficoSemana() {
             x2={LARGURA - MARGEM.right}
             y1={BASELINE_Y}
             y2={BASELINE_Y}
-            stroke="rgba(255,255,255,0.08)"
+            stroke="var(--color-line)"
           />
 
           {agregados.map((a, i) => {
@@ -202,7 +201,7 @@ export default function GraficoSemana() {
                   />
                 )}
                 <circle cx={p.x} cy={p.y} r={3} fill="var(--color-chart-desempenho)" />
-                <text x={p.x} y={p.y - 8} textAnchor="middle" fontSize="9" fill="var(--color-chart-desempenho)">
+                <text x={p.x} y={p.y - 8} textAnchor="middle" fontSize="14" fill="var(--color-chart-desempenho)">
                   {p.pct}%
                 </text>
               </g>
@@ -214,7 +213,7 @@ export default function GraficoSemana() {
             const cy = BASELINE_Y + 16
             if (a.questoes === 0) {
               return (
-                <text key={i} x={x} y={cy + 3} textAnchor="middle" fontSize="9" fill="rgba(255,255,255,0.25)">
+                <text key={i} x={x} y={cy + 3} textAnchor="middle" fontSize="14" fill="var(--color-muted)">
                   —
                 </text>
               )
@@ -223,7 +222,7 @@ export default function GraficoSemana() {
             return (
               <g key={i}>
                 <circle cx={x} cy={cy} r={raio} fill="var(--color-chart-questoes)" opacity={0.85} />
-                <text x={x} y={cy + 14} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.6)">
+                <text x={x} y={cy + 14} textAnchor="middle" fontSize="14" fill="var(--color-muted)">
                   {a.questoes}
                 </text>
               </g>
@@ -239,9 +238,9 @@ export default function GraficoSemana() {
                 x={x}
                 y={BASELINE_Y + 46}
                 textAnchor="middle"
-                fontSize="10"
+                fontSize="14"
                 fontWeight={chave === chaveHoje ? 700 : 400}
-                fill={chave === chaveHoje ? 'var(--color-brand-400)' : 'rgba(255,255,255,0.4)'}
+                fill={chave === chaveHoje ? 'var(--color-brand-400)' : 'var(--color-muted)'}
               >
                 {DIAS_SEMANA_ABREV[i].toUpperCase()}
               </text>
@@ -254,7 +253,7 @@ export default function GraficoSemana() {
               x2={escalaX(hoverIndex, 7)}
               y1={MARGEM.top}
               y2={BASELINE_Y}
-              stroke="rgba(255,255,255,0.15)"
+              stroke="var(--color-line)"
             />
           )}
 
@@ -276,20 +275,21 @@ export default function GraficoSemana() {
             )
           })}
         </svg>
+        </div>
 
-        <p className="mt-2 text-center text-xs text-slate-500">
+        <p className="mt-2 text-center text-xs text-muted">
           Total na semana: {totalHoras.toFixed(1)}h · {totalQuestoes} questões
-          {diasComQuestoes.length > 0 ? ` · desempenho médio ${mediaDesempenho}%` : ''}
+          {diasComQuestoes.length > 0 ? ` · acertos no total de questões: ${mediaDesempenho}%` : ''}
         </p>
       </div>
 
-      <div className="rounded-xl bg-navy-850 p-4">
-        <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <div className="rounded-md bg-soft p-4">
+        <p className="mb-3 flex items-center gap-2 text-xs font-semibold text-muted">
           <IconBook className="h-3.5 w-3.5" />
           Tempo por matéria
         </p>
         {tempoPorMateria.length === 0 ? (
-          <p className="py-6 text-center text-sm text-slate-500">Nenhum estudo registrado nessa semana.</p>
+          <p className="py-6 text-center text-sm text-muted">Nenhum estudo registrado nessa semana.</p>
         ) : (
           <div className="flex flex-col gap-3">
             {tempoPorMateria.map(({ materia, minutos }) => {
@@ -297,10 +297,10 @@ export default function GraficoSemana() {
               return (
                 <div key={materia.id}>
                   <div className="mb-1 flex items-center justify-between gap-2 text-xs">
-                    <span className="truncate font-medium text-slate-200">{materia.nome}</span>
-                    <span className="shrink-0 text-slate-400">{formatarMinutos(minutos)}</span>
+                    <span className="truncate font-medium text-ink">{materia.nome}</span>
+                    <span className="shrink-0 text-muted">{formatarMinutos(minutos)}</span>
                   </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-line">
                     <div
                       className={`h-full rounded-full transition-[width] duration-700 ease-out ${estilo.bar}`}
                       style={{ width: `${(minutos / maxMinutosMateria) * 100}%` }}
@@ -314,22 +314,23 @@ export default function GraficoSemana() {
       </div>
       </div>
 
+      <details className="mt-5 border-t border-line pt-4"><summary className="cursor-pointer text-sm">Ver valores por dia</summary><div className="mt-3 overflow-x-auto"><table className="w-full text-left text-sm"><caption className="sr-only">Valores da semana por dia</caption><thead><tr><th scope="col" className="p-2">Dia</th><th scope="col" className="p-2">Tempo</th><th scope="col" className="p-2">Questões</th><th scope="col" className="p-2">Acertos</th></tr></thead><tbody>{agregados.map(dia => <tr key={dia.data.toISOString()} className="border-t border-line"><th scope="row" className="p-2 font-normal">{dia.data.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</th><td className="p-2">{dia.tempoMinutos} min</td><td className="p-2">{dia.questoes}</td><td className="p-2">{dia.questoes ? `${dia.acertos} (${dia.desempenho}%)` : 'Sem questões'}</td></tr>)}</tbody></table></div></details>
       {hoverIndex !== null &&
         hoverPos &&
         createPortal(
           <div
-            className="animate-tooltip pointer-events-none fixed z-50 w-max -translate-x-1/2 -translate-y-full rounded-lg bg-navy-950 px-3 py-2 text-xs text-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.4)] ring-1 ring-white/10"
+            className="animate-tooltip pointer-events-none fixed z-50 w-max -translate-x-1/2 -translate-y-full rounded-lg bg-canvas px-3 py-2 text-xs text-ink shadow-[0_4px_16px_rgba(0,0,0,0.4)] ring-1 ring-line"
             style={{ top: hoverPos.top - 8, left: hoverPos.left }}
           >
-            <p className="mb-1 font-semibold text-white">
+            <p className="mb-1 font-semibold text-ink">
               {agregados[hoverIndex].data.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}
             </p>
-            <p className="text-slate-300">{horas[hoverIndex].toFixed(1)}h de estudo</p>
-            <p className="text-slate-300">{agregados[hoverIndex].questoes} questões respondidas</p>
-            <p className="text-slate-300">
+            <p className="text-ink">{horas[hoverIndex].toFixed(1)}h de estudo</p>
+            <p className="text-ink">{agregados[hoverIndex].questoes} questões respondidas</p>
+            <p className="text-ink">
               {agregados[hoverIndex].questoes > 0 ? `${agregados[hoverIndex].desempenho}% de acerto` : 'sem questões respondidas'}
             </p>
-            <span className="absolute left-1/2 top-full -mt-px h-2 w-2 -translate-x-1/2 rotate-45 rounded-[2px] bg-navy-950 ring-1 ring-white/10" />
+            <span className="absolute left-1/2 top-full -mt-px h-2 w-2 -translate-x-1/2 rotate-45 rounded-[2px] bg-canvas ring-1 ring-line" />
           </div>,
           document.body,
         )}
